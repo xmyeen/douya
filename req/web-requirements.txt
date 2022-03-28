@@ -1,0 +1,4 @@
+#--index-url https://mirrors.aliyun.com/pypi/simple
+#-e https://github.com/foo/bar.git#egg=bar
+-r ./db-requirements.txt
+sanic

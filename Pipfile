@@ -1,0 +1,36 @@
+[[source]]
+name = "pbg"
+url = "https://mirrors.aliyun.com/pypi/simple"
+trusted-host = "mirrors.aliyun.com"
+verify_ssl = false
+
+[scripts]
+install = "python setup.py sdist install"
+
+upload = "python setup.py sdist bdist_wheel clean --all upload"
+
+# pipenv run tests -k stringexpr
+# 执行指定文件：pipenv run tests xxx.py
+# 执行指定方法：pipenv run tests xxx.py::yyy_func
+# 执行有标记的方法：pipenv run tests -m mark xxx.py 
+# 其他参数：
+# -v 显示每个测试函数的执行结果
+# -q 只显示整体测试结果
+# -s 显示测试函数的print输出
+# -x 
+# --cov=<path> 指定被测试对象
+# --cov--report=type 测试报告类型：term/term-missing/annotate/html/xml
+# --cov-config=<path> 配置文件
+# --no-cov-on-fail 测试失败，不生成测试报告
+# --cov-fail-under=MIN 如果测试覆盖率低于MIN，则认为失败
+tests = "python -m pytest"
+
+[dev-packages]
+
+[packages]
+
+[requires]
+python_version = "3"
+
+[pipenv]
+allow_prereleases = false

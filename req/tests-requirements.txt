@@ -1,0 +1,8 @@
+#测试套件
+pytest
+#覆盖率插件
+pytest-cov
+#数据库驱动
+pony
+sqlalchemy
+# aiosqlite
