@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
-from .db_defs import DialectDef, OrmDef, OptDef
+from .db_defs import DialectDef, OrmDef, OptDef, OrmConnectionPoolTypeDef
 
-__all__ = [ "DialectDef", "OrmDef", "OptDef" ]
+__all__ = [ "DialectDef", "OrmDef", "OptDef", "OrmConnectionPoolTypeDef" ]

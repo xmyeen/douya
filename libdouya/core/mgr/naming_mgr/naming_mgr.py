@@ -30,6 +30,7 @@ class NamingMgr(metaclass = Singleton):
             raise RuntimeError(f"Not found naming type: {name}")
 
         cls, _ = cls_list[-1]
+        print(f'# {self} #', cls_list)
         return cls(*args, **kwargs)
 
     def get_alias_urls(self, what:Union[str, Type]) -> List[str]:
@@ -43,4 +44,4 @@ class NamingMgr(metaclass = Singleton):
             raise RuntimeError(f"Not found naming type: {name}")
 
         _, opt = cls_list[-1]
-        return opt.get('alias_urls')
+        return opt.alias_urls

@@ -5,6 +5,9 @@ from attrbox import AttrDict
 import enum
 
 DY_CONFIGURATION_KEY_DEF = AttrDict(
+    # 错误码配置项
+    ERROR = "err",
+    ERROR_URL = "err.url",
     # 数据库配置项
     DATABASE = "db",
     PRIMARY_DATABASE = "db.priv",
@@ -12,6 +15,7 @@ DY_CONFIGURATION_KEY_DEF = AttrDict(
     # 服务配置项
     SERVICE = "srv",
     HTTP_SERVICE = "srv.httpd",
+    HTTP_SERVICE_ENABLE = "srv.httpd.enable",
     HTTP_SERVICE_HOST = "srv.httpd.host",
     HTTP_SERVICE_PORT = "srv.httpd.port",
     # 目录配置项
@@ -26,6 +30,7 @@ DY_CONFIGURATION_KEY_DEF = AttrDict(
 
 @enum.unique
 class ConfigerDefs(enum.Enum):
+    ERR = "DY:ERROR"
     DB = "DY:DATABASE"
     # SVR = "DY:SERVER"
     SRV = "DY:SERVICE"

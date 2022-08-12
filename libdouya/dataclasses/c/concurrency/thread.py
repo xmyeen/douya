@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 import threading,asyncio,logging
 from typing import Callable

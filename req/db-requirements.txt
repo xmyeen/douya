@@ -1,1 +1,4 @@
+#数据库驱动
+sqlalchemy
+#默认Postgresl数据库支持
 psycopg2cffi

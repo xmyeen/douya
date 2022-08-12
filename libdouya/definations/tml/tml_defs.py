@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 """
     tml_defs.py - 文件标记语言定义

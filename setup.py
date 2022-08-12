@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 import os, datetime
 from setuptools import find_packages
-from assemtools.tool.setup import setup, on_version, on_description, on_requirement
+from assemtools import setup, on_version, on_description, on_requirement
 
 setup(
     on_version('0.0.1', 'a'),

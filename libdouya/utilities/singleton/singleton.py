@@ -25,6 +25,7 @@ class singleton_d(object):
         self.__singleton_info__ = {}
 
     def __call__(self):
+        print(f"# {self} #", self.__cls, self.__singleton_info__)
         if self.__cls not in self.__singleton_info__:
             self.__singleton_info__[self.__cls] = self.__cls()
         return self.__singleton_info__[self.__cls]

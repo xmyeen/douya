@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 '''
     db_defs.py - 数据库相关
@@ -21,3 +21,9 @@ class OptDef(Enum):
 class OrmDef(Enum):
     PONY_ORM = "orm:pony"
     SQLALCHEMY_ORM = "orm:sqlalchemy"
+
+@unique
+class OrmConnectionPoolTypeDef(Enum):
+    EVERY_PROCESSOR = "mp"
+    EVERY_THREAD = "mt"
+    ONLY_ONE = "one"

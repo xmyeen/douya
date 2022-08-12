@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
-from .dy_app import DyApp
+from .application import DyApplication
 
-__all__ = [ "DyApp" ]
+__all__ = [ "DyApplication" ]

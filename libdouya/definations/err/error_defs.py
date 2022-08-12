@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 """
     error_defs.py - 错误码相关的枚举
 """
 
+import typing
 from enum import Enum,unique
 
 @unique

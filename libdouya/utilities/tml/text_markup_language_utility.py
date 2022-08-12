@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 '''
     text_markup_language_utility.py - 文本标记语言通用方法集

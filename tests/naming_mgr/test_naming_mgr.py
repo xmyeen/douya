@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 from libdouya.core.deco import obj_d, svc_d
 from libdouya.core.mgr import NamingMgr

@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from .database import IDatabase
+from .database import IDatabaseDeclarative, IDatabaseProxy, IDatabases
 
-__all__ = [ "IDatabase" ]
+__all__ = [ "IDatabaseDeclarative", "IDatabaseProxy", "IDatabases" ]

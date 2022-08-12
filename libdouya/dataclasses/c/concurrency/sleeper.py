@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 import threading
 from typing import Any
@@ -9,8 +9,8 @@ class Sleeper(object):
         self.__event = threading.Event()
         self.__result = result
 
-    def sleep(self, delay:int) -> Any:
-        self.__event.wait(delay)
+    def sleep(self, delay_seconds:int) -> Any:
+        self.__event.wait(delay_seconds)
         return self.__result
 
     def wakeup(self):

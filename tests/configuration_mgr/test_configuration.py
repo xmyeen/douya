@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env Python
+#!/usr/bin/env python
 
 import os, json, tempfile
 from libdouya.definations.cfg.env_defs import EnvDefs, EnvFilterModeDef, EnvSelectModeDef

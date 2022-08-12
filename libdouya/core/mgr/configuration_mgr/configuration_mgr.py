@@ -7,6 +7,7 @@ from typing import Union, List, Dict, Iterator, Any
 from attrbox import AttrDict, dict_set, dict_get, dict_merge
 from ....definations import DyUrlDefs
 from ....definations.cfg import EnvDefs,EnvFilterModeDef,EnvSelectModeDef, DY_CONFIGURATION_KEY_DEF
+from ....dataclasses.i.cfg import IBaseConfiger
 from ....utilities.singleton import Singleton
 from ....utilities import StrUtl, PathUtl, TmlDefs, TmlUtl
 from ...utilities.configer import parse_configer_key_by_url
@@ -196,9 +197,11 @@ class ConfigurationMgr(metaclass = Singleton):
         cfg = self.get_conf(urls[-1])
         if cfg is None: raise RuntimeError(f"Can't find configuration: {urls[-1]}")
 
-        c = NamingMgr.get_instance().new_naming(name, cfg, *args, **kwargs)
+        c : IBaseConfiger = NamingMgr.get_instance().new_naming(name)
         if c is None: raise RuntimeError(f"Can't create configer: {name}")
 
+        c.configuration = cfg
+        c.initialize(*args, **kwargs)
         return c
 
     def merge_configuration(self, configuration:Dict[str,Any]):
@@ -264,6 +267,7 @@ class ConfigurationMgr(metaclass = Singleton):
         containing_env_dirs:bool = parameter_info.get('containing_env_dirs', False)
 
         dirs = [ d for d in self.__env_cfg.lookup_directories if d and os.path.exists(d) ]
+        dirs.append(self.as_data_diretory())
 
         if containing_env_dirs:
             dirs.extend([ d for d in self.__env_cfg.configuration_directories if d and os.path.exists(d) ] )
