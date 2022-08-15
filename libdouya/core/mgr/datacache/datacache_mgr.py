@@ -8,7 +8,7 @@ from .error.error_datacache import ErrorDatacache
 
 class DatacacheMgr(metaclass = Singleton):
     def __init__(self):
-        self.__cache_info : Dict[str, IDatacache] = []
+        self.__cache_info : Dict[str, IDatacache] = {}
 
     @staticmethod
     def get_instance() -> 'DatacacheMgr':

@@ -2,6 +2,7 @@
 #!/usr/bin/env python
 
 
+from .is_utility import *
 from .string import StrUtl
 from .path import PathUtl
 from .tml import TmlDefs,TmlUtl

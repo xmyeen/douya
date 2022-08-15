@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from faulthandler import disable
 import logging
 from typing import List
 from pony.orm import PrimaryKey,Required
@@ -13,9 +12,9 @@ from libdouya.dataclasses.c.db import Databases
 from libdouya.core.mgr import ConfigurationMgr
 from libdouya.core.deco import obj_d
 # from libdouya.serve.dy_server import DyServer
-from libdouya.core.funtool.db import make_db_declarative
+from libdouya.core.hook.db import make_db_declarative
 from libdouya.core.app import DyApplication
-from libdouya.core.funtool.err import mkerr
+from libdouya.core.hook.err import mkerr
 import libdouya.core.rdb.orm.pony_database
 from libdouya.implements.services.sanic_service import SanicAsyncService, BaseAsyncService
 import libdouya.implements.configers.default_service_configer
@@ -59,7 +58,7 @@ class MySanicAsyncService(SanicAsyncService):
 
     async def initialize(self):
         print('Make errr', mkerr(1, "My Error"))
-        
+
         with self.databases.db().on_transactional_session() as _:
             User(name = '张三', age = 18)
 
@@ -86,7 +85,7 @@ class MyDyApp(DyApplication):
                     priv = dict(url = "sqlite:///app.db")
                 ),
                 srv = dict(
-                    cron = dict(disable = True, schedule = dict( cron = "* * * * * 0/10"), parallel_number = 3),
+                    cron = dict(disable = False, schedule = dict( cron = "* * * * * 0/10"), parallel_number = 3),
                     httpd =  dict(parallel_mode = 'mp', disable = False)
                 )
             )

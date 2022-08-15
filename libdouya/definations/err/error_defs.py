@@ -59,8 +59,8 @@ class ErrorDefs(Enum):
     AWAITING_OBJECTS_TIMEOUT = 259 # 等待对象超时
     QUERYING_RESOURCES_FAILED = 260 # 资源查询失败
     QUERYING_OBJECTS_FAILED = 261 # 对象查询失败
-    QUERYING_any_RESOURCES_FAILED = 262 # 资源全部查询失败
-    QUERYING_any_OBJECTS_FAILED = 263 # 对象全部查询失败
+    QUERYING_ALL_RESOURCES_FAILED = 262 # 资源全部查询失败
+    QUERYING_ALL_OBJECTS_FAILED = 263 # 对象全部查询失败
     QUERYING_RESOURCES_BY_PAGING_FAILED = 264 # 资源分页查询失败 
     QUERYING_OBJECTS_BY_PAGING_FAILED = 265 # 对象分页查询失败 
     QUERYING_RESOURCES_BY_CONDITION_FAILED = 266 # 资源条件查询失败
@@ -97,7 +97,7 @@ class ErrorDefs(Enum):
     ARGS_NOT_EXISTS = 328 # 参数不存在
     ARGS_HAS_ALREADY_EXISTED = 329 # 参数已经存在
     ARGS_TOO_LONG = 330 # 参数过长
-    ARGS_TOO_SMany = 331 # 参数过短
+    ARGS_TOO_SHORT = 331 # 参数过短
     ARGS_LENGHT_OUT_OF_RANGE = 332 # 参数长度在一定范围
     ARGS_OUT_OF_RANGE = 333 # 超过数值指定范围
     ARGS_VALUE_ISNOT_EXPECTED = 334 # 参数非期望的值

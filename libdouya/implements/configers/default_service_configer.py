@@ -28,6 +28,7 @@ class DefaultServiceConfiger(ServiceConfiger):
         for service_code, service_configuration in self.configuration.items():
             try:
                 logging.debug(f"The outter configuration of '{service_code}' service: {service_configuration}")
+
                 #不启用
                 if not service_configuration or service_configuration.get("disable"): continue
 

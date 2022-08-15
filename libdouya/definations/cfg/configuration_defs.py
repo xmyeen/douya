@@ -15,7 +15,6 @@ DY_CONFIGURATION_KEY_DEF = AttrDict(
     # 服务配置项
     SERVICE = "srv",
     HTTP_SERVICE = "srv.httpd",
-    HTTP_SERVICE_ENABLE = "srv.httpd.enable",
     HTTP_SERVICE_HOST = "srv.httpd.host",
     HTTP_SERVICE_PORT = "srv.httpd.port",
     # 目录配置项

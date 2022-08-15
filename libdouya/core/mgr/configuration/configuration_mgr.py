@@ -206,9 +206,9 @@ class ConfigurationMgr(metaclass = Singleton):
 
     def try_to_get_configer(self, name:str, *args:List[Any], **kwargs:Dict[str,Any]) -> Any:
         try:
-            return self.__get_configer(name, *args, **kwargs)
+            return self.get_configer(name, *args, **kwargs)
         except BaseException as e:
-            logging.warn(str(e))
+            logging.warning(str(e))
             return None
 
     def merge_configuration(self, configuration:Dict[str,Any]):
