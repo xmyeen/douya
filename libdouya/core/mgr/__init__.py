@@ -1,7 +1,8 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from .naming_mgr import NamingMgr
-from .configuration_mgr import EnvironmentConfiguration,ConfigurationMgr
+from .naming import NamingMgr
+from .configuration import EnvironmentConfiguration,ConfigurationMgr
+from .datacache import DatacacheMgr
 
-__all__ = ["NamingMgr", "EnvironmentConfiguration", "ConfigurationMgr"]
+__all__ = ["NamingMgr", "EnvironmentConfiguration", "ConfigurationMgr", "DatacacheMgr"]

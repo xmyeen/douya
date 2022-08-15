@@ -11,7 +11,7 @@ from ....dataclasses.i.cfg import IBaseConfiger
 from ....utilities.singleton import Singleton
 from ....utilities import StrUtl, PathUtl, TmlDefs, TmlUtl
 from ...utilities.configer import parse_configer_key_by_url
-from ..naming_mgr import NamingMgr
+from ..naming import NamingMgr
 from .constant import CONFIGURATION_DFLT_DEF, ENVIRONMENT_MAPPING_CONFIGURATION_DFLT_DEF
 # from .db import DatabaseConfigurer
 
@@ -203,6 +203,13 @@ class ConfigurationMgr(metaclass = Singleton):
         c.configuration = cfg
         c.initialize(*args, **kwargs)
         return c
+
+    def try_to_get_configer(self, name:str, *args:List[Any], **kwargs:Dict[str,Any]) -> Any:
+        try:
+            return self.__get_configer(name, *args, **kwargs)
+        except BaseException as e:
+            logging.warn(str(e))
+            return None
 
     def merge_configuration(self, configuration:Dict[str,Any]):
         if not isinstance(configuration, Dict): return

@@ -11,6 +11,6 @@
 # core.rdb 
 # core.mgr 
 # core.configer 
-# core.funtool
+# core.hook
 # core.app
 # implements

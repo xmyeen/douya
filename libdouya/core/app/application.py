@@ -10,9 +10,8 @@ from ...dataclasses.i.rdb import IDatabaseDeclarative
 from ...dataclasses.c.db.databases import Databases
 from ...utilities.tml import TmlUtl
 from ...utilities.module import ModuleUtl
-from ..err import ErrorCache
 from ..srv import ServiceTask
-from ..mgr import ConfigurationMgr, NamingMgr
+from ..mgr import ConfigurationMgr, NamingMgr, DatacacheMgr
 
 
 # Windows信号时
@@ -50,8 +49,10 @@ class DyApplication(object):
 
         logging.debug(str(ConfigurationMgr.get_instance().configuration))
 
-        error_cache = NamingMgr.get_instance().new_naming(ErrorCache)
-        error_cache.load()
+        DatacacheMgr.get_instance().initialize()
+        if datacache_configer := ConfigurationMgr.get_instance().try_to_get_configer(ConfigerDefs.DATACACHE.value):
+            datacaches = datacache_configer.make_data_caches()
+            DatacacheMgr.get_instance().add(*datacaches)
 
         dbs: Databases = None
         if declaratives := self.get_database_declaratives():

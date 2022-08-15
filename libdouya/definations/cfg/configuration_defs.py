@@ -34,3 +34,4 @@ class ConfigerDefs(enum.Enum):
     DB = "DY:DATABASE"
     # SVR = "DY:SERVER"
     SRV = "DY:SERVICE"
+    DATACACHE = "DY:DATACACHE"

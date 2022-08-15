@@ -56,3 +56,6 @@ class BaseAsyncService(IDyService):
     @schedule_configuration.setter
     def schedule_configuration(self, schedule_configuration:Dict[str,Any]):
         self.configuration.update('schedule', schedule_configuration)
+
+    async def initialize(self):
+        pass
