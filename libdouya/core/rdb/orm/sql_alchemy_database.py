@@ -13,8 +13,10 @@ try:
     from sqlalchemy import create_engine
 except:
     pass
+from ....definations.err import ErrorDefs
 from ....definations.db import DialectDef, OptDef, OrmDef, OrmConnectionPoolTypeDef
 from ....dataclasses.i.rdb import IDatabaseDeclarative, IDatabaseProxy
+from ....dataclasses.c.err import DyError
 from ...deco import obj_d
 from .parent.base_database import BaseDatabaseDeclarative, BaseDatabaseProxy
 
@@ -61,9 +63,10 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
             try:
                 yield s
                 s.commit()
-            except:
-                logging.exception("Got some exception")
+            except BaseException as e:
+                # logging.exception("Got some exception")
                 s.rollback()
+                raise DyError(ErrorDefs.DB_OPERATE_FAILED.value, "Operate Database Failed", str(e)).as_exception()
 
 @obj_d(OrmDef.SQLALCHEMY_ORM.value)
 class SqlAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):

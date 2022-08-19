@@ -59,9 +59,9 @@ class TmlUtl(object):
     @staticmethod
     def loads(text: str, lan:TmlDefs, input_encoding:str = None, *args, **kwargs) -> Union[Dict,List]:
         if text is None:
-            raise DyError(ErrorDefs.ARGS_MUSTBE_EXIST, parameter_name = "text")
+            raise DyError(ErrorDefs.ARGS_MUSTBE_EXIST.value, title = "No argument exist", error_messsage = "Miss 'text' argument").as_exception()
         if lan is None:
-            raise DyError(ErrorDefs.ARGS_MUSTBE_EXIST, parameter_name = "lan")
+            raise DyError(ErrorDefs.ARGS_MUSTBE_EXIST.value, title = "No argument exist", error_messsage = "Miss 'lan' argument").as_exception()
 
         if not input_encoding: input_encoding = 'utf-8'
         input_str = text.encode(input_encoding).decode('utf-8') if 'utf-8' != codecs.lookup(input_encoding).name else text
@@ -70,14 +70,14 @@ class TmlUtl(object):
             return json.loads(input_str, *args, **kwargs)
         elif TmlDefs.TOML == lan:
             if toml is None:
-                raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'toml' module")
+                raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", error_messsage = "Can't import 'toml' module").as_exception()
             return toml.loads(input_str)
         elif TmlDefs.YAML == lan:
             if yaml is None:
-                raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'yaml' module")
+                raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", error_messsage = "Can't import 'yaml' module").as_exception()
             return yaml.load(input_str, Loader = yaml.Loader)
         else:
-            raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT)
+            raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT.value, title = "Unsupport", error_message = f"Unsupported configuration format: {lan or 'None'}").as_exception()
 
     @staticmethod
     def loads_attr(text: str, lan:TmlDefs, input_encoding:str = None, *args, **kwargs) -> Union[AttrDict,AttrList]:
@@ -87,7 +87,7 @@ class TmlUtl(object):
     @staticmethod
     def dumps(o: dict, lan:TmlDefs = None, output_encoding:str = None, *args, **kwargs) -> str:
         if lan is None:
-            raise DyError(ErrorDefs.ARGS_MUSTBE_EXIST, parameter_name = "lan")
+            raise DyError(ErrorDefs.ARGS_MUSTBE_EXIST.value, title = "No argument exist", error_messsage = "Miss 'lan' argument").as_exception()
 
         if not output_encoding: output_encoding = 'utf-8'
         with StringIO() as sio:
@@ -96,25 +96,24 @@ class TmlUtl(object):
                     json.dump(o, ef, *args, **kwargs)
                 elif TmlDefs.TOML == lan:
                     if toml is None:
-                        raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'toml' module")
+                        raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", message = "Can't import 'toml' module").as_exception()
                     toml.dump(o, ef) 
                 elif TmlDefs.YAML == lan:
                     if yaml is None:
-                        raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'yaml' module")
+                        raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", message = "Can't import 'yaml' module").as_exception()
                     yaml.dump(o, ef, *args, **kwargs)
                 else:
-                    raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT)
+                    raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT.value, title = "Unsupport", error_message = f"Unsupported configuration format: {lan or 'None'}").as_exception()
+
         sio.seek(0)
         return sio.read()
 
     @staticmethod
     def load(file_path: Union[Path,AnyStr], lan:TmlDefs = None, input_encoding:str = None, *args, **kwargs) -> dict:
         if not os.path.exists(file_path):
-            raise DyError(ErrorDefs.NO_FILE_FOUND)
+            raise DyError(ErrorDefs.NO_FILE_FOUND.value, title = "No fild found", error_message = f"Lost file '{file_path}'").as_exception()
 
         lan_en = TmlUtl.guess_file(file_path) if not lan else lan
-        if lan_en is None:
-            raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT, file = file_path)
 
         if not input_encoding: input_encoding = 'utf-8'
         with codecs.open(file_path, 'r', encoding = input_encoding) as f:
@@ -122,14 +121,14 @@ class TmlUtl(object):
                 return json.load(f, *args, **kwargs)
             elif TmlDefs.TOML == lan_en:
                 if toml is None:
-                    raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'toml' module")
+                    raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", message = "Can't import 'toml' module").as_exception()
                 return toml.load(f)
             elif TmlDefs.YAML == lan_en:
                 if yaml is None:
-                    raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'yaml' module")
+                    raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", message = "Can't import 'yaml' module").as_exception()
                 return yaml.load(f, Loader = yaml.Loader)
             else:
-                raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT)
+                raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT.value, title = "Unsupport", error_message = f"Unsupported configuration format: {lan or 'None'}").as_exception()
 
     @staticmethod
     def load_attr(file_path: Union[Path,AnyStr], lan:TmlDefs = None, input_encoding:str = None, *args, **kwargs) -> Union[AttrDict,AttrList]:
@@ -139,8 +138,6 @@ class TmlUtl(object):
     @staticmethod
     def dump(o: dict, file_path: Union[Path,AnyStr], lan:TmlDefs = None, output_encoding:str = None, *args, **kwargs):
         lan_en = TmlUtl.guess_file(file_path) if not lan else lan
-        if lan_en is None:
-            raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT, file = file_path)
 
         if not output_encoding: output_encoding = 'utf-8'
         with open(file_path, 'w', encoding = output_encoding) as f:
@@ -149,11 +146,11 @@ class TmlUtl(object):
                     json.dump(o, ef, *args, **kwargs)
                 elif TmlDefs.TOML == lan_en:
                     if toml is None:
-                        raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'toml' module")
+                        raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", error_message = "Can't import 'toml' module").as_exception()
                     toml.dump(o, ef) 
                 elif TmlDefs.YAML == lan_en:
                     if yaml is None:
-                        raise DyError(ErrorDefs.UNDEFINED_ERROR, title = "No Module", message = "Can't import 'yaml' module")
+                        raise DyError(ErrorDefs.UNDEFINED_ERROR.value, title = "No Module", error_message = "Can't import 'yaml' module").as_exception()
                     yaml.dump(o, ef, *args, **kwargs)
                 else:
-                    raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT)
+                    raise DyError(ErrorDefs.UNSUPPORTED_CONFIGURATION_FORMAT.value, title = "Unsupport", error_message = f"Unsupported configuration format: {lan or 'None'}").as_exception()

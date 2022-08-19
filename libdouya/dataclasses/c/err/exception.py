@@ -5,7 +5,7 @@ from ...i.err import IDyError
 
 class DyException(Exception):
     def __init__(self, error:IDyError):
-        super().__init__(self, error)
+        Exception.__init__(self, str(error))
         self.__error = error
 
     def append(self, *other_error_messages:str):

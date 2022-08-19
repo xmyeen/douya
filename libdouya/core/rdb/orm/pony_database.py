@@ -12,8 +12,10 @@ try:
     from pony.orm.core import db_session
 except:
     pass
+from ....definations.err import ErrorDefs
 from ....definations.db import DialectDef, OptDef, OrmDef, OrmConnectionPoolTypeDef
 from ....dataclasses.i.rdb import IDatabaseDeclarative, IDatabaseProxy
+from ....dataclasses.c.err import DyError
 from ...deco import obj_d
 from .parent.base_database import BaseDatabaseDeclarative, BaseDatabaseProxy
 
@@ -46,7 +48,7 @@ class PonyDatabaseProxy(BaseDatabaseProxy):
             if u.path in ['', '/', '/:memory:']:
                 self.internal_implementation.bind(provider='sqlite', filename = ':memory:')
             else:
-                db_dir = self.configuration.get("db_dir", os.getcwd())
+                db_dir = self.configuration.get("db_dir") or os.getcwd()
                 db_file_path = os.path.abspath(os.path.join(db_dir, u.path[1:]))
                 self.internal_implementation.bind(provider='sqlite', filename = db_file_path, create_db = True)
         elif u.scheme.lower() == DialectDef.PG.value.lower():
@@ -92,9 +94,10 @@ class PonyDatabaseProxy(BaseDatabaseProxy):
             try:
                 yield
                 commit_session()
-            except:
-                logging.exception("Got some exception")
+            except BaseException as e:
+                # logging.exception("Got some exception")
                 rollback_session()
+                raise DyError(ErrorDefs.DB_OPERATE_FAILED.value, "Operate Database Failed", str(e)).as_exception()
 
 
 @obj_d(OrmDef.PONY_ORM.value)

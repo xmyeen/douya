@@ -26,7 +26,13 @@ class ServiceThreadRunner(ServiceBaseRunner):
         except BaseException as e:
             logging.exception(f"Got '{self.service.code}' service exception")
         finally:
-            self.__loop.close()
+            try:
+                for task in asyncio.all_tasks():
+                    if task.done(): continue
+                    if task.cancel(): continue
+                    logging.warn(f"Cancel task '{task.get_name()}' failed")
+            finally:
+                self.__loop.close()
 
     def before_halt(self):
         # super(DyThreadExecutiveService, self).halt_soon()
@@ -34,9 +40,4 @@ class ServiceThreadRunner(ServiceBaseRunner):
             self.__cron_sleeper.wakeup()
 
         if self.__loop and not self.__loop.is_closed():
-            if tasks := [ task for task in asyncio.all_tasks(self.__loop) if not task.done() ]:
-                for task in tasks:
-                    if not task.cancel():
-                        logging.warn(f"Cancel task '{task.get_name()}' failed")
-
             self.__loop.call_soon_threadsafe(self.__loop.stop)

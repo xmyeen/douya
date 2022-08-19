@@ -19,6 +19,15 @@ class Req(object):
         return asdict(self)
 
     @staticmethod
+    def from_dict(data:Dict[str, Any]):
+        if not data: return None
+        return Req(
+            version = data.get('version'),
+            metadata = Metadata.from_dict(data.get('metadata')),
+            data = data.get('data')
+        )
+
+    @staticmethod
     def build(data:Any, version:str = "v1", metadata:Metadata = None) -> 'Req':
         return Req(
             version = version,
@@ -36,6 +45,16 @@ class Res(object):
     def to_dict(self):
         return asdict(self)
 
+    @staticmethod
+    def from_dict(data:Dict[str, Any]):
+        if not data: return None
+        return Res(
+            version = data.get('version'),
+            statusdata = Statusdata.from_dict(dict.get('statusdata')),
+            metadata = Metadata.from_dict(dict.get('metadata')),
+            datas = data.get('datas') or []
+        )
+
     def copy_metadata(self, metadata:Metadata = None):
         if metadata:
             self.metadata = metadata
@@ -49,8 +68,8 @@ class Res(object):
             version = "v1",
             statusdata = Statusdata(
                 id = 0,
-                message = "",
-                prompt_messsage = ""
+                prompt_message = "",
+                message = ""
             ),
             datas = datas
         )
@@ -61,8 +80,8 @@ class Res(object):
             version = "v1",
             statusdata = Statusdata(
                 id = err.id,
-                message = str(err),
-                prompt_messsage = err.prompt_messsage
+                prompt_message = err.prompt_message,
+                message = str(err)
             ),
             datas = datas
         )

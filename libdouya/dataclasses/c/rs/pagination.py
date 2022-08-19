@@ -2,6 +2,7 @@
 #!/usr/bin/env python
 
 from dataclasses import dataclass
+from typing import Dict, Any
 from ....definations.err import ErrorDefs
 from ..err import DyError
 
@@ -10,6 +11,15 @@ class Pagination:
     offset: int
     limit: int
     total: int
+
+    @staticmethod
+    def from_dict(data:Dict[str, Any]):
+        if not data: return None
+        return Pagination(
+            offset = data.get('offset'),
+            limit = data.get('limit'),
+            total = data.get('total')
+        )
 
     @staticmethod
     def from_page(page_number:int, page_size:int, total_size:int = -1) -> 'Pagination':

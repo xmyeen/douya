@@ -167,6 +167,11 @@ class ConfigurationMgr(metaclass = Singleton):
         # 环境变量可以覆盖其他变量
         self.__env_cfg.write_to(self.__configuration)
 
+        for catalog_dir in self.get_conf(DY_CONFIGURATION_KEY_DEF.CATALOG, {}).values():
+            d = PathUtl.cov_to_os_path(catalog_dir)
+            d = os.path.abspath(d)
+            os.makedirs(d, exist_ok=True)
+
         logging.debug(f"The application configuration: {json.dumps(self.configuration)}")
 
     @property
@@ -233,6 +238,12 @@ class ConfigurationMgr(metaclass = Singleton):
         logging.info(f'Load configuration files: {":".join(ipaths)}')
         
         # 如果存在其他环境版本的配置文件，则读取，并合并
+
+    def as_run_diretory(self, sub_path:os.PathLike = None) -> os.PathLike:
+        p = self.get_conf(DY_CONFIGURATION_KEY_DEF.RUN_CATALOG_DIR)
+        if p: p = PathUtl.cov_to_os_path(p)
+        if sub_path: p = os.path.join(p, PathUtl.cov_to_os_path(sub_path))
+        return os.path.abspath(p)
 
     def as_data_diretory(self, sub_path:os.PathLike = None) -> os.PathLike:
         p = self.get_conf(DY_CONFIGURATION_KEY_DEF.DATA_CATALOG_DIR)

@@ -5,7 +5,7 @@
 
 from typing import Union, Any
 from ....definations.datacache import DatacacheIdDef
-from ....dataclasses.c.err import ErrorDefs, DyError
+from ....dataclasses.c.err import ErrorDefs, DyError, DyException
 from ...mgr import DatacacheMgr
 
 def mkerr(id: Union[int, ErrorDefs], *error_messages: Any, **keyword_argument: Any) -> DyError:
@@ -15,3 +15,6 @@ def mkerr(id: Union[int, ErrorDefs], *error_messages: Any, **keyword_argument: A
         .and_other_error_messages(*error_messages) \
         .and_keyword_argument(keyword_argument) \
         .build()
+
+def mkex(id: Union[int, ErrorDefs], *error_messages: Any, **keyword_argument: Any) -> DyException:
+    return mkerr(id, *error_messages, **keyword_argument).as_exception()

@@ -11,15 +11,15 @@ from ...i.err import IDyError
 from .exception import DyException
 
 class DyError(IDyError):
-    def __init__(self, id:int, title:str, error_message:str, prompt_messsage:str = None, **keyword_argument:Any):
+    def __init__(self, id:int, title:str, error_message:str, prompt_message:str = None, **keyword_argument:Any):
         self.__id = id
         self.__title = title
         self.__error_messages = [error_message]
-        self.__prompt_messsages = [prompt_messsage or error_message]
+        self.__prompt_messages = [prompt_message or error_message]
         self.__keyword_argument = keyword_argument
 
     def __repr__(self) -> str:
-        return f'Errorcode(id={self.__id}, title={self.__title}, error_messages={self.__error_messages}, prompt_messsages={self.__prompt_messsages}, keyword_argument={self.__keyword_argument})'
+        return f'Errorcode(id={self.__id}, title={self.__title}, error_messages={self.__error_messages}, prompt_messages={self.__prompt_messages}, keyword_argument={self.__keyword_argument})'
 
     def __str__(self) -> str:
         return "[0x%x] %s - %s - %s" % (self.id, self.title, self.error_message, self.__get_keyword_string())
@@ -41,7 +41,7 @@ class DyError(IDyError):
 
     @property
     def prompt_message(self)->str:
-        return '. '.join([ m.format(**self.__keyword_argument) for m in self.__prompt_messsages if m ])
+        return '. '.join([ m.format(**self.__keyword_argument) for m in self.__prompt_messages if m ])
 
     @property
     def error_message(self)->str:
@@ -56,10 +56,10 @@ class DyError(IDyError):
             for other_error_message in other_error_messages:
                 if isinstance(other_error_message, IDyError):
                     self.__error_messages.append(other_error_message.error_message)
-                    self.__prompt_messsages.append(other_error_message.__prompt_messsages)
+                    self.__prompt_messages.append(other_error_message.__prompt_messages)
                 else:
                     self.__error_messages.append(str(other_error_message))
-                    self.__prompt_messsages.append(str(other_error_message))
+                    self.__prompt_messages.append(str(other_error_message))
         return self
 
     def as_exception(self):
