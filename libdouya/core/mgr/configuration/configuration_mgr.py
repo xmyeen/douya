@@ -71,7 +71,7 @@ class EnvironmentConfiguration(object):
 
     @property
     def configuration_names(self) -> List[str]:
-        val_str = self.get_env(EnvDefs.APP_CFG_NAME.name, "app.toml")
+        val_str = self.get_env(EnvDefs.APP_CFG_NAME.name, "app.toml:app.json")
         if not val_str:
             raise RuntimeError(f"Miss the '{EnvDefs.APP_CFG_NAME.name}' configuration")
         return reduce(lambda x, y: y if y in x else x+[y], [[], ] + val_str.split(":"))
