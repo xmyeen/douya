@@ -2,6 +2,8 @@
 pytest
 #覆盖率插件
 pytest-cov
+# Lint插件
+flake8
 # aiosqlite
 -r requirements.txt
 -r web-requirements.txt
