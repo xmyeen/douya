@@ -1,0 +1,3 @@
+#数据库驱动
+#postgresql+psycopg2cffi://scott:tiger@127.0.0.1:5432/test
+sqlalchemy[postgresql_psycopg2cffi]

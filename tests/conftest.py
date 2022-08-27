@@ -4,7 +4,6 @@
 import os, pytest, tempfile
 from libdouya.definations.db import OrmDef
 from libdouya.core.mgr import ConfigurationMgr
-from libdouya.core.rdb.orm import mkdb
 from libdouya.definations.cfg.env_defs import EnvDefs
 
 # @pytest.fixture(autouse=True)
@@ -44,16 +43,16 @@ def make_temp_env_of_lookup():
         yield os.environ
     os.environ = old_environ
 
-@pytest.fixture(scope = 'function')
-def make_db_from_configuration():
-    ConfigurationMgr.get_instance().init()
-    db = mkdb(OrmDef.PONY_ORM.value)
-    yield db
-    # print(db.core.close)
-    # old_environ = os.environ.copy()
-    # with tempfile.TemporaryDirectory() as td:
-    #     dirnames = [ os.path.join(td, str(i)) for i in range(0, 5) ]
-    #     [ os.makedirs(dirname) for dirname in dirnames ] 
-    #     os.environ.update({ EnvDefs.APP_LOOKUP_DIR.name : ":".join(dirnames) })
-    #     yield os.environ
-    # os.environ = old_environ
+# @pytest.fixture(scope = 'function')
+# def make_db_declarative():
+#     ConfigurationMgr.get_instance().init()
+#     db_declarative = make_db_declarative(OrmDef.PONY_ORM.value)
+#     yield db_declarative
+#     # print(db.core.close)
+#     # old_environ = os.environ.copy()
+#     # with tempfile.TemporaryDirectory() as td:
+#     #     dirnames = [ os.path.join(td, str(i)) for i in range(0, 5) ]
+#     #     [ os.makedirs(dirname) for dirname in dirnames ] 
+#     #     os.environ.update({ EnvDefs.APP_LOOKUP_DIR.name : ":".join(dirnames) })
+#     #     yield os.environ
+#     # os.environ = old_environ

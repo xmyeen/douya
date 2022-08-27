@@ -3,3 +3,7 @@ pytest
 #覆盖率插件
 pytest-cov
 # aiosqlite
+-r requirements.txt
+-r web-requirements.txt
+-r db_lite-requirements.txt
+-r db_postgresql-requirements.txt
