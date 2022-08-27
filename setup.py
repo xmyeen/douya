@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import os, datetime
 from setuptools import find_packages
 from assemtools import setup, on_version, on_description, on_requirement
 
