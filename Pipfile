@@ -6,9 +6,7 @@ verify_ssl = false
 
 [scripts]
 install = "python setup.py sdist install"
-
 upload = "python setup.py sdist bdist_wheel clean --all upload"
-
 # pipenv run tests -k stringexpr
 # 执行指定文件：pipenv run tests xxx.py
 # 执行指定方法：pipenv run tests xxx.py::yyy_func
@@ -23,11 +21,23 @@ upload = "python setup.py sdist bdist_wheel clean --all upload"
 # --cov-config=<path> 配置文件
 # --no-cov-on-fail 测试失败，不生成测试报告
 # --cov-fail-under=MIN 如果测试覆盖率低于MIN，则认为失败
+# --full-trace 死循环的情况下，退出会打印堆栈
 tests = "python -m pytest"
 
 [dev-packages]
 
 [packages]
+douya = {editable = true, path = "."}
+pytest = "*"
+pytest-cov = "*"
+flake8 = "*"
+attrbox = "*"
+concurrent-log-handler = "*"
+croniter = "*"
+toml = "*"
+sanic = "*"
+pony = "*"
+sqlalchemy = {extras = ["postgresql_psycopg2cffi"], version = "*"}
 
 [requires]
 python_version = "3"

@@ -12,23 +12,26 @@ from .statusdata import Statusdata
 @dataclass
 class Req(object):
     version: str = "v1"
-    metadata: Metadata = None
-    data: Dict[str,Any] = field(default_factory = dict)
+    metadata: Metadata|None = None
+    data: dict[str,Any] = field(default_factory = dict)
 
     def to_dict(self):
         return asdict(self)
 
     @staticmethod
-    def from_dict(data:Dict[str, Any]):
+    def from_dict(data:dict[str, Any]) -> 'Req' | None:
         if not data: return None
+        
+        metadata_data = data.get('metadata')
+        
         return Req(
-            version = data.get('version'),
-            metadata = Metadata.from_dict(data.get('metadata')),
-            data = data.get('data')
+            version = data.get('version', 'v1'),
+            metadata = metadata_data and Metadata.from_dict(metadata_data),
+            data = data.get('data', {})
         )
 
     @staticmethod
-    def build(data:Any, version:str = "v1", metadata:Metadata = None) -> 'Req':
+    def build(data:Any, version:str = "v1", metadata:Metadata|None = None) -> 'Req':
         return Req(
             version = version,
             metadata = metadata,
@@ -38,32 +41,38 @@ class Req(object):
 @dataclass
 class Res(object):
     version: str = "v1"
-    statusdata: Statusdata = None
-    metadata: Metadata = None
-    datas: List[Any] = field(default_factory=list)
+    statusdata: Statusdata|None = None
+    metadata: Metadata|None = None
+    datas: list[Any] = field(default_factory=list)
 
     def to_dict(self):
         return asdict(self)
 
     @staticmethod
-    def from_dict(data:Dict[str, Any]):
+    def from_dict(data:dict[str, Any]) -> 'Res' | None:
         if not data: return None
+        
+        statusdata_data = data.get('statusdata')
+        if statusdata_data is None: return None
+
+        metadata_data = data.get('metadata')
+
         return Res(
-            version = data.get('version'),
-            statusdata = Statusdata.from_dict(dict.get('statusdata')),
-            metadata = Metadata.from_dict(dict.get('metadata')),
+            version = data.get('version', 'v1'),
+            statusdata = Statusdata.from_dict(statusdata_data),
+            metadata = metadata_data and Metadata.from_dict(metadata_data),
             datas = data.get('datas') or []
         )
 
-    def copy_metadata(self, metadata:Metadata = None):
+    def copy_metadata(self, metadata:Metadata|None = None):
         if metadata:
             self.metadata = metadata
 
     def is_ok(self) -> bool:
-        return self.statusdata and ErrorDefs.SUCCESS.value == self.statusdata.id
+        return (ErrorDefs.SUCCESS.value == self.statusdata.id) if self.statusdata else False
 
     @staticmethod
-    def success(*datas):
+    def success(*datas: Any):
         return Res (
             version = "v1",
             statusdata = Statusdata(
@@ -71,11 +80,11 @@ class Res(object):
                 prompt_message = "",
                 message = ""
             ),
-            datas = datas
+            datas = list(datas)
         )
 
     @staticmethod
-    def fail(err: DyError,  *datas):
+    def fail(err: DyError,  *datas: Any):
         return Res (
             version = "v1",
             statusdata = Statusdata(
@@ -83,7 +92,7 @@ class Res(object):
                 prompt_message = err.prompt_message,
                 message = str(err)
             ),
-            datas = datas
+            datas = list(datas)
         )
 
 

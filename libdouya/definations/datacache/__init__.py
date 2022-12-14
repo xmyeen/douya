@@ -2,4 +2,4 @@
 #!/usr/bin/env python
 
 from .datacache_defs import DatacacheIdDef
-__all__ = [ "DatacacheIdDef "]
+__all__ = [ "DatacacheIdDef"]

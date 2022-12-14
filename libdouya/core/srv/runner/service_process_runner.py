@@ -11,7 +11,7 @@ class ServiceProcessRunner(ServiceBaseRunner):
         ServiceBaseRunner.__init__(self, service, multiprocessing.Event())
 
     @staticmethod
-    def cancel_all_task(loop: asyncio.BaseEventLoop, cron_sleeper: Sleeper):
+    def cancel_all_task(loop: asyncio.AbstractEventLoop, cron_sleeper: Sleeper):
         if not cron_sleeper:
             cron_sleeper.set()
 

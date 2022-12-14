@@ -35,7 +35,6 @@ def test_catalog():
     assert(os.path.abspath("bak/1") == ConfigurationMgr.get_instance().as_backup_diretory("1"))
     assert(os.path.abspath("bak/1/2") == ConfigurationMgr.get_instance().as_backup_diretory("1/2"))
 
-
 def test_merge_configuration():
     ConfigurationMgr.get_instance().init()
 
@@ -53,7 +52,11 @@ def test_merge_configuration():
 def test_appenv_confs(make_temp_env_of_app_cfg):
     app_env = "dev"
     app_cfg_dir = os.environ.get(EnvDefs.APP_CFG_DIR.name)
+    assert(app_cfg_dir is not None)
+
     app_cfg_name = os.environ.get(EnvDefs.APP_CFG_NAME.name)
+    assert(app_cfg_name is not None)
+
     data_dir_info = dict(non = "data_dir_on_default", devel = "data_dir_in_devel")
 
     with open(os.path.join(app_cfg_dir, app_cfg_name), 'w', encoding='utf-8') as f:
@@ -64,7 +67,7 @@ def test_appenv_confs(make_temp_env_of_app_cfg):
         f.write(json.dumps(dict(catalog = dict(data_dir = data_dir_info["devel"])), ensure_ascii=False))
         f.flush()
 
-    ConfigurationMgr.get_instance().init(None)
+    ConfigurationMgr.get_instance().init()
     assert(os.path.abspath(data_dir_info["non"]) == ConfigurationMgr.get_instance().as_data_diretory())
 
     ConfigurationMgr.get_instance().init(app_env)
@@ -73,7 +76,9 @@ def test_appenv_confs(make_temp_env_of_app_cfg):
 def test_appenv_files(make_temp_env_of_lookup):
     app_env = "dev"
     filename = "test_lookup.csv"
-    lookup_dirs = os.environ.get(EnvDefs.APP_LOOKUP_DIR.name).split(":")
+    lookup_dir_str = os.environ.get(EnvDefs.APP_LOOKUP_DIR.name)
+    assert(lookup_dir_str is not None)
+    lookup_dirs = lookup_dir_str.split(":")
     for lookup_dir in lookup_dirs:
         with open(os.path.join(lookup_dir, filename), 'w', encoding='utf-8') as f:
             f.write("name\nZhangsan")
@@ -90,31 +95,30 @@ def test_appenv_files(make_temp_env_of_lookup):
             f.write("name\nLisi")
             f.flush()
 
-
     ConfigurationMgr.get_instance().init(app_env)
 
     for en in EnvFilterModeDef.__members__.values():
         cfg = dict(filter_mode = en.name, select_mode = EnvSelectModeDef.ANY.name, walking_subdirs = False, containing_env_dirs = False)
-        assert(1 == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+        assert(1 == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
         cfg = dict(filter_mode = en.name, select_mode = EnvSelectModeDef.ANY.name, walking_subdirs = True, containing_env_dirs = False)
-        assert(1 == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+        assert(1 == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
 
     cfg = dict(filter_mode = EnvFilterModeDef.ALL.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = False, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 2) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 2) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
     cfg = dict(filter_mode = EnvFilterModeDef.ALL.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = True, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 3) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 3) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
 
     cfg = dict(filter_mode = EnvFilterModeDef.ENV_FILES_FIRST.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = False, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
     cfg = dict(filter_mode = EnvFilterModeDef.ENV_FILES_FIRST.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = True, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 2) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 2) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
 
     cfg = dict(filter_mode = EnvFilterModeDef.ONLY_ENV_FILES.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = False, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
     cfg = dict(filter_mode = EnvFilterModeDef.ONLY_ENV_FILES.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = True, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 2) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 2) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
 
     cfg = dict(filter_mode = EnvFilterModeDef.EXINCLUDING_ENV_FILES.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = False, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))
     cfg = dict(filter_mode = EnvFilterModeDef.EXINCLUDING_ENV_FILES.name, select_mode = EnvSelectModeDef.ALL.name, walking_subdirs = True, containing_env_dirs = False)
-    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_appenv_files(filename, **cfg))))
+    assert((len(lookup_dirs) * 1) == len(list(ConfigurationMgr.get_instance().walk_app_files(filename, **cfg))))

@@ -7,11 +7,12 @@ from attrbox import AttrDict
 class IBaseConfiger(metaclass = ABCMeta):
     def __init__(self): pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def configuration(self) -> AttrDict:
         '''配置'''
     @configuration.setter
-    def configuration(self, val:AttrDict) -> AttrDict: pass
+    def configuration(self, val:AttrDict): pass
 
     @abstractmethod
     def initialize(self, *args, **kwargs): pass

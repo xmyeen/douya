@@ -21,7 +21,7 @@ class DefaultDatabaseConfiger(DatabaseConfiger):
         for code_name in databases.code_names:
             databases.db(code_name).establish_connection()
 
-    def initialize_and_get_databases(self, *declaratives:IDatabaseDeclarative) -> IDatabases:
+    def initialize_and_get_databases(self, *declaratives:IDatabaseDeclarative) -> IDatabases|None:
         dbs = []
         for declarative in declaratives:
             subcfg = self.configuration.get(declarative.code_name)

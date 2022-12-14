@@ -30,7 +30,7 @@ class BaseDatabaseProxy(IDatabaseProxy):
         return self.__code_name
 
     @property
-    def configuration(self) -> typing.Dict[str, typing.Any]:
+    def configuration(self) -> dict[str, typing.Any]:
         return self.__configuration or {}
 
     @property
@@ -41,7 +41,7 @@ class BaseDatabaseProxy(IDatabaseProxy):
         return self.configuration.get('url', "sqlite:///:memory:")
 
     @property
-    def connection_options(self) -> typing.List[str]:
+    def connection_options(self) -> list[str]:
         return self.configuration.get('options', [OptDef.CREATING_TABLES.value])
 
     @property

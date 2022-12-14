@@ -8,7 +8,8 @@ from ...c.db.databases import Databases
 class IDyService(metaclass = ABCMeta):
     def __init__(self): pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def databases(self) -> Databases:
         '''数据库对象'''
     @databases.setter
@@ -16,15 +17,17 @@ class IDyService(metaclass = ABCMeta):
     def databases(self, val: Databases):
         pass
 
-    @abstractproperty
-    def configuration(self) -> Dict[str, Any]:
+    @property
+    @abstractmethod
+    def configuration(self) -> dict[str, Any]:
         '''配置'''
     @configuration.setter
     @abstractmethod
-    def configuration(self, val: Dict[str, Any]):
+    def configuration(self, val: dict[str, Any]):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def code(self) -> str:
         '''唯一编码'''
     @code.setter
@@ -32,7 +35,8 @@ class IDyService(metaclass = ABCMeta):
     def code(self, val: str):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def parallel_mode(self) -> str:
         '''并发方式：mt/mp'''
     @parallel_mode.setter
@@ -40,7 +44,8 @@ class IDyService(metaclass = ABCMeta):
     def parallel_mode(self, val: str):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def parallel_number(self) -> int:
         '''并发数目'''
     @parallel_number.setter
@@ -48,12 +53,13 @@ class IDyService(metaclass = ABCMeta):
     def parallel_number(self, val: int):
         pass
 
-    @abstractproperty
-    def schedule_configuration(self) -> Dict[str,Any]:
+    @property
+    @abstractmethod
+    def schedule_configuration(self) -> dict[str,Any]:
         '''调度配置'''
     @schedule_configuration.setter
     @abstractmethod
-    def schedule_configuration(self, val: Dict[str,Any]):
+    def schedule_configuration(self, val: dict[str,Any]):
         pass
 
     @abstractmethod

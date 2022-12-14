@@ -2,8 +2,7 @@
 #!/usr/bin/env python
 
 import logging
-from typing import Any, List, Iterable
-from attrbox import AttrDict
+from typing import Iterable
 from ...definations.cfg import DY_CONFIGURATION_KEY_DEF, ConfigerDefs
 from ...dataclasses.i.srv import IDyService
 from ...dataclasses.c.cfg import ServiceConfiger
@@ -23,7 +22,7 @@ class DefaultServiceConfiger(ServiceConfiger):
     # def __exit__(self,exc_type, exc_val, exc_tb):
     #     pass
 
-    def group_services(self, dbs: Databases) -> Iterable[List[IDyService]]:
+    def group_services(self, dbs: Databases) -> Iterable[list[list[IDyService]]]:
         srvs = []
         for service_code, service_configuration in self.configuration.items():
             try:

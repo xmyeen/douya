@@ -8,7 +8,7 @@ from .error.error_datacache import ErrorDatacache
 
 class DatacacheMgr(metaclass = Singleton):
     def __init__(self):
-        self.__cache_info : Dict[str, IDatacache] = {}
+        self.__cache_info : dict[str, IDatacache] = {}
 
     @staticmethod
     def get_instance() -> 'DatacacheMgr':
@@ -25,7 +25,7 @@ class DatacacheMgr(metaclass = Singleton):
             self.__cache_info.update({ datacache.id : datacache })
 
     def make_builder(self, id:str, key:Any) -> IDatacacheObjectBuilder:
-        datacache: IDatacache = self.__cache_info.get(id)
+        datacache: IDatacache|None = self.__cache_info.get(id)
         if not datacache: raise RuntimeError(f"No '{id}' datacahe found")
 
         return datacache.make_builder(key)

@@ -34,7 +34,7 @@ class CallableUtl:
         if not CallableUtl.is_callable(what):
             return
         elif isinstance(what, Awaitable):
-            t = loop.create_task(what)
+            t = loop.create_task(what) # type: ignore            
             t.add_done_callback(on_task_done)
             if not loop.is_running(): loop.run_until_complete(t)
         elif isinstance(what, Generator):
@@ -49,7 +49,7 @@ class CallableUtl:
         elif isinstance(what, (MethodType, FunctionType)):
             CallableUtl.put_callable_deeply_until_uncallable(loop, what(*args, **kwargs), *args, **kwargs)
         else:
-            raise DyError(ErrorDefs.INVALID_ARG_FORMAT, parameter_name = "what")
+            raise DyError(ErrorDefs.INVALID_ARG_FORMAT.value, title = "Invalid parameter", error_message = "The parameter is invalid", parameter_name = "what").as_exception()
 
     @staticmethod
     def run_callable_deeply_until_uncallable(loop: asyncio.AbstractEventLoop, what:Any = None, *args, **kwargs):
@@ -68,7 +68,7 @@ class CallableUtl:
         if what is None:
             return None
         elif isinstance(what, Awaitable):
-            t = loop.create_task(what)
+            t = loop.create_task(what) # type: ignore
             t.add_done_callback(on_task_done)
             if not loop.is_running():
                 loop.run_until_complete(t)
@@ -87,7 +87,7 @@ class CallableUtl:
         elif isinstance(what, (MethodType, FunctionType)):
             CallableUtl.run_callable_deeply_until_uncallable(loop, what(*args, **kwargs), *args, **kwargs)
         else:
-            raise DyError(ErrorDefs.INVALID_ARG_FORMAT, parameter_name = "what")
+            raise DyError(ErrorDefs.INVALID_ARG_FORMAT.value, title = "Invalid parameter", error_message = "The parameter is invalid", parameter_name = "what").as_exception()
 
     @staticmethod
     async def call_callable_deeply_until_uncallable(what:Any) -> Any:
@@ -96,20 +96,20 @@ class CallableUtl:
         if not CallableUtl.is_callable(what):
             return what
         elif isinstance(what, Awaitable):
-            return await CallableUtl.call_recursively(await what)
+            return await CallableUtl.call_callable_deeply_until_uncallable(await what)
         elif isinstance(what, Generator):
-            return [await CallableUtl.call_recursively(o) for o in what ]
+            return [await CallableUtl.call_callable_deeply_until_uncallable(o) for o in what ]
         elif isinstance(what, AsyncGenerator):
-            return [await CallableUtl.call_recursively(o) async for o in what ]
+            return [await CallableUtl.call_callable_deeply_until_uncallable(o) async for o in what ]
         elif isinstance(what, (MethodType, FunctionType)):
-            return await CallableUtl.call_recursively(what())
+            return await CallableUtl.call_callable_deeply_until_uncallable(what())
         else:
-            raise DyError(ErrorDefs.INVALID_ARG_FORMAT, parameter_name = "what")
+            raise DyError(ErrorDefs.INVALID_ARG_FORMAT.value, title = "Invalid parameter", error_message = "The parameter is invalid", parameter_name = "what").as_exception()
 
     @staticmethod
     async def call_callable_deeply_until_uncallable_later(delay:int, what:Any) -> Any:
         await asyncio.sleep(delay, asyncio.get_running_loop())
-        return await CallableUtl.call_callable_deeply_until_uncallable(delay, what)
+        return await CallableUtl.call_callable_deeply_until_uncallable(what)
 
     # def call_thing_forever(loop: asyncio.AbstractEventLoop, what:Any, cond: Callable):
     #     '''利用run_forever执行任务

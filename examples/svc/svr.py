@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import logging
-from typing import List
+from typing import Any
 from pony.orm import PrimaryKey,Required
 from sanic import Blueprint, json, text, Sanic
+from sanic.blueprint_group import BlueprintGroup
 from libdouya.dataclasses.i.rdb import IDatabaseDeclarative
 from libdouya.definations.db import OrmDef
 from libdouya.definations.cfg import ConfigerDefs
@@ -53,14 +53,15 @@ class MySanicAsyncService(SanicAsyncService):
         SanicAsyncService.__init__(self)
         self.__blueprint = bp0
 
-    def get_blueprint(self) -> Blueprint:
+    def get_blueprint(self) -> BlueprintGroup:
         return self.__blueprint
 
     async def initialize(self):
         print('Make errr', mkerr(1, "My Error"))
 
-        with self.databases.db().on_transactional_session() as _:
-            User(name = '张三', age = 18)
+        if db := self.databases.db():
+            with db.on_transactional_session() as _:
+                User(name = '张三', age = 18)
 
         # self.sanic.ctx.dbs = dbs
 
@@ -78,7 +79,7 @@ class MyDyApp(DyApplication):
     def __init__(self):
         DyApplication.__init__(self)
 
-    def get_configurations(self) -> List[str]:
+    def get_configurations(self) -> list[dict[str, Any]]:
         return [
             dict(
                 db = dict (
@@ -91,7 +92,7 @@ class MyDyApp(DyApplication):
             )
         ]
 
-    def get_database_declaratives(self) -> List[IDatabaseDeclarative]:
+    def get_database_declaratives(self) -> list[IDatabaseDeclarative]:
         return [ db_declarative ]
 
 app = MyDyApp()

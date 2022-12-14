@@ -5,27 +5,33 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from typing import List
 
 class IDyError(metaclass = ABCMeta):
-    @abstractproperty
+    @property
+    @abstractmethod
     def id(self)->int:
         '''错误码唯一编号'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def code(self)->str:
         '''错误码唯一编码'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def title(self)->str:
         '''错误码标题'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def prompt_message(self)->str:
         '''错误码提示消息'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def error_message(self)->str:
         '''错误码事故消息'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def is_successful(self)->bool:
         '''是否成功'''
 

@@ -3,21 +3,21 @@
 
 import warnings
 from dataclasses import dataclass
-from typing import List, Dict, Any, Tuple, Type, ClassVar
+from typing import Any, Type, ClassVar
 from ...utilities.singleton import singleton_d
 
 @dataclass
 class TypeInfo(object):
     original: Type
-    alias_urls : List[str]
+    alias_urls : list[str]
 
 class naming_d(object):
     '''命名对象注解
     '''
-    type_info : ClassVar[Dict[str, List[Tuple[Type, Dict[str, Any]]]]] = {}
-    alias_info : ClassVar[Dict[str, str]] = {}
+    type_info : ClassVar[dict[str, list[tuple[Type, TypeInfo]]]] = {}
+    alias_info : ClassVar[dict[str, str]] = {}
 
-    def __init__(self, *names:str, is_singleton:bool = None, alias_urls:List[str] = None):
+    def __init__(self, *names:str, is_singleton:bool|None = None, alias_urls:list[str]|None = None):
         self.__names = names
         self.__is_singleton = True if is_singleton else False
         self.__alias_urls = alias_urls if alias_urls else []
@@ -45,11 +45,11 @@ class naming_d(object):
 class obj_d(naming_d):
     '''普通对象注解
     '''
-    def __init__(self, *names:str, alias_urls:List[str] = None):
+    def __init__(self, *names:str, alias_urls:list[str]|None  = None):
         naming_d.__init__(self, *names, is_singleton = False, alias_urls = alias_urls)
 
 class svc_d(naming_d):
     '''服务型对象注解
     '''
-    def __init__(self, *names:str, alias_urls:List[str] = None):
+    def __init__(self, *names:str, alias_urls:list[str]|None  = None):
         naming_d.__init__(self, *names, is_singleton = True, alias_urls = alias_urls)

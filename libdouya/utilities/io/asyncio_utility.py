@@ -19,7 +19,7 @@ class AsyncioUtl(object):
         for task in tasks:
             task.cancel()
 
-        loop.run_until_complete(asyncio.gather(*tasks, loop=loop, return_exceptions=True))
+        loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
 
         for task in tasks:
             if not task.cancelled() and task.exception() is not None:
@@ -32,7 +32,7 @@ class AsyncioUtl(object):
                 ) 
 
     @staticmethod
-    def set_signal_handler_for_event_loop(loop: asyncio.AbstractEventLoop, handler:Callable = None):
+    def set_signal_handler_for_event_loop(loop: asyncio.AbstractEventLoop, handler:Callable|None = None):
         def handle_sig(signum, frame):
             logging.info(f"Capture signal: {signal.Signals(signum).name}")
             if handler is not None: handler(loop, signum, frame)

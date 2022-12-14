@@ -74,7 +74,7 @@ class StrUtl(object):
         return input_str.encode(source_encoding_str).decode(dest_encoding_str)
 
     @staticmethod
-    def gen_uuid(name:str = None):
+    def gen_uuid(name:str|None = None):
         if name:
             return uuid.uuid3(uuid.NAMESPACE_DNS, name).hex
         else:

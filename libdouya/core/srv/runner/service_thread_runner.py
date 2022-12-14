@@ -9,7 +9,7 @@ from .parent import ServiceBaseRunner
 class ServiceThreadRunner(ServiceBaseRunner):
     def __init__(self, service: IDyService):
         ServiceBaseRunner.__init__(self, service, threading.Event())
-        self.__loop: asyncio.BaseEventLoop = asyncio.new_event_loop()
+        self.__loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         self.__cron_sleeper: Sleeper = Sleeper()
 
     def run(self):

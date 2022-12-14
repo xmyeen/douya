@@ -1,8 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import logging, threading, multiprocessing, datetime
-from typing import Union
+import logging, threading, multiprocessing.synchronize, datetime
 from abc import ABCMeta, abstractmethod
 from croniter import croniter
 from .....definations.cfg import ConfigerDefs
@@ -11,7 +10,7 @@ from .....dataclasses.c.concurrency.sleeper import Sleeper
 from ....mgr import ConfigurationMgr
 
 class ServiceBaseRunner(metaclass = ABCMeta):
-    def __init__(self, service: IDyService, halt_flag: Union[threading.Event, multiprocessing.Event]):
+    def __init__(self, service: IDyService, halt_flag: threading.Event | multiprocessing.synchronize.Event):
         self.__service = service
         self.__halt_flag = halt_flag
 

@@ -134,3 +134,4 @@ dmypy.json
 
 # run目录过滤
 run/*
+pyproject.toml

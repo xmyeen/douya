@@ -11,7 +11,7 @@ from ...i.err import IDyError
 from .exception import DyException
 
 class DyError(IDyError):
-    def __init__(self, id:int, title:str, error_message:str, prompt_message:str = None, **keyword_argument:Any):
+    def __init__(self, id:int, title:str, error_message:str, prompt_message:str|None = None, **keyword_argument:Any):
         self.__id = id
         self.__title = title
         self.__error_messages = [error_message]
@@ -56,7 +56,7 @@ class DyError(IDyError):
             for other_error_message in other_error_messages:
                 if isinstance(other_error_message, IDyError):
                     self.__error_messages.append(other_error_message.error_message)
-                    self.__prompt_messages.append(other_error_message.__prompt_messages)
+                    self.__prompt_messages.append(other_error_message.prompt_message)
                 else:
                     self.__error_messages.append(str(other_error_message))
                     self.__prompt_messages.append(str(other_error_message))

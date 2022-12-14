@@ -26,7 +26,7 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
         self.__session_factory = None
         self.__engine = None
 
-    def __get_session_factory(self) -> sessionmaker:
+    def __get_session_factory(self) -> scoped_session | sessionmaker: # pyright: reportUnboundVariable=false
         if not self.__session_factory:
             self.__session_factory = sessionmaker(bind = self.__engine)
             if self.configuration.get('multi_threading'):
@@ -43,7 +43,7 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
     def connect(self, enable_scheme_rebuiding:bool):
         connection_options = self.connection_options or []
         
-        self.__engine = create_engine(self.url)
+        self.__engine = create_engine(self.connection_url)
         if enable_scheme_rebuiding:
             if OptDef.DROPPING_TABLES.value in connection_options:
                 self.declarative.internal_implementation.metadata.drop_all(self.__engine)
@@ -70,8 +70,8 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
 
 @obj_d(OrmDef.SQLALCHEMY_ORM.value)
 class SqlAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):
-    def __init__(self):
-        BaseDatabaseDeclarative.__init__(self)
+    def __init__(self, code_name:str):
+        BaseDatabaseDeclarative.__init__(self, code_name)
         self.__base : DeclarativeMeta  = declarative_base()
 
     @property

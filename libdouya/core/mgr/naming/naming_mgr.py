@@ -33,7 +33,7 @@ class NamingMgr(metaclass = Singleton):
         print(f'# {self} #', cls_list)
         return cls(*args, **kwargs)
 
-    def get_alias_urls(self, what:Union[str, Type]) -> List[str]:
+    def get_alias_urls(self, what:Union[str, Type]) -> list[str]:
         if isinstance(what, type):
             name =  f'{what.__module__}:{what.__name__}'
         else:

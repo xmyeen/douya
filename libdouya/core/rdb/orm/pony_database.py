@@ -43,7 +43,7 @@ class PonyDatabaseProxy(BaseDatabaseProxy):
 
         u = urlparse(self.connection_url)
         if u.scheme is None:
-            raise RuntimeError(f"Invalid database url. No 'scheme' found : {self.url}")
+            raise RuntimeError(f"Invalid database url. No 'scheme' found : {self.connection_url}")
         elif u.scheme.lower() == DialectDef.SQLITE.value.lower():
             if u.path in ['', '/', '/:memory:']:
                 self.internal_implementation.bind(provider='sqlite', filename = ':memory:')
@@ -54,7 +54,7 @@ class PonyDatabaseProxy(BaseDatabaseProxy):
         elif u.scheme.lower() == DialectDef.PG.value.lower():
             # postgresql://scott:tiger@localhost:5432/mydatabase'
             opt = {}
-            if u.path in ['', '/']: raise RuntimeError(f"Invalid database url. No 'database' found: {self.url}")
+            if u.path in ['', '/']: raise RuntimeError(f"Invalid database url. No 'database' found: {self.connection_url}")
             if u.username: opt.update(user = u.username)
             if u.password: opt.update(password = u.password)
             if u.hostname: opt.update(host = u.hostname)

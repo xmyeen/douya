@@ -6,7 +6,7 @@ from ....i.cfg import IBaseConfiger
 
 class BaseConfiger(IBaseConfiger):
     def __init__(self):
-        self.__configuration : AttrDict  = None
+        self.__configuration : AttrDict = AttrDict()
 
     def __enter__(self):
         return self
@@ -18,7 +18,7 @@ class BaseConfiger(IBaseConfiger):
     def configuration(self) -> AttrDict:
         return self.__configuration
     @configuration.setter
-    def configuration(self, configuration:AttrDict) -> AttrDict:
+    def configuration(self, configuration:AttrDict):
         self.__configuration = configuration
 
     def initialize(self, *args, **kwargs):

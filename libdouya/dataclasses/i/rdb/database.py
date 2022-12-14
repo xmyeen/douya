@@ -26,40 +26,52 @@ from contextlib import contextmanager
 class IDatabaseProxy(metaclass = ABCMeta):
     def __init__(self): pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def code_name(self) -> str:
         '''数据库代号'''
 
-    @abstractproperty
-    def configuration(self) -> Dict[str,Any]:
+    @property
+    @abstractmethod
+    def configuration(self) -> dict[str,Any]:
         '''配置'''
     # @configuration.setter
     # @abstractmethod
-    # def configuration(self, val: Dict[str,Any]):
+    # def configuration(self, val: dict[str,Any]):
     #     pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def connection_url(self) -> str:
         '''连接信息'''
 
-    @abstractproperty
-    def connection_options(self) -> List[str]:
+    @property
+    @abstractmethod
+    def connection_options(self) -> list[str]:
         '''连接选项'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def is_debugging(self) -> bool: 
         '''是否调试模式'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def internal_implementation(self) -> Any: 
         '''内部实现'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def declarative(self) -> 'IDatabaseDeclarative': 
         '''数据库代号'''
 
     @abstractmethod
     def connect(self, enable_scheme_rebuiding:bool):
+        '''连接数据库
+        '''
+
+    @abstractmethod
+    def establish_connection(self):
         '''连接数据库
         '''
 
@@ -81,15 +93,18 @@ class IDatabaseProxy(metaclass = ABCMeta):
 class IDatabaseDeclarative(metaclass = ABCMeta):
     def __init__(self): pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def code_name(self) -> str: 
         '''数据库代号'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def table(self) -> Any: 
         '''表的描述'''
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def internal_implementation(self) -> Any: 
         '''内部实现'''
 
@@ -99,9 +114,10 @@ class IDatabaseDeclarative(metaclass = ABCMeta):
 class IDatabases(object):
     def __init__(self): pass
 
-    @abstractproperty
-    def code_names(self) -> List[str]:
+    @property
+    @abstractmethod
+    def code_names(self) -> list[str]:
         '''代号列表'''
 
     @abstractmethod
-    def db(self, code_name:str = None) -> IDatabaseProxy: pass
+    def db(self, code_name:str|None = None) -> IDatabaseProxy: pass

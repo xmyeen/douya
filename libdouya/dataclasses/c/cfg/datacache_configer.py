@@ -11,6 +11,6 @@ class DatacacheConfiger(BaseConfiger):
         BaseConfiger.__init__(self)
 
     @abstractmethod
-    def make_data_caches(self) -> List[IDatacache]:
+    def make_data_caches(self) -> list[IDatacache]:
         '''创建数据缓存对象列表
         '''

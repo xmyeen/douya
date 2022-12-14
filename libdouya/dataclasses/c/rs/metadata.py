@@ -9,19 +9,20 @@ from .pagination import Pagination
 
 @dataclass
 class Metadata(object):
-    seq: str = None
-    pagination: Pagination = None
-    passback: Dict[str, Any] = None
-    forwared_for: str = None
-    track_service_url: str = None
+    seq: str|None = None
+    pagination: Pagination|None = None
+    passback: dict[str, Any]|None = None
+    forwared_for: str|None = None
+    track_service_url: str|None = None
 
     @staticmethod
-    def from_dict(data:Dict[str, Any]):
+    def from_dict(data:dict[str, Any]):
         if not data: return None
+        pagination_data = data.get('pagination')
 
         return Metadata(
             seq = data.get('seq'),
-            pagination = Pagination.from_dict(data.get('pagination')),
+            pagination = pagination_data and Pagination.from_dict(pagination_data),
             passback = data.get('passback'),
             forwared_for = data.get('forwared_for'),
             track_service_url = data.get('track_service_url')

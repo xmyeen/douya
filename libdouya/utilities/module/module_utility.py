@@ -5,7 +5,7 @@
     module_utility.py - 包相关功能函数
 """
 
-import logging, inspect, pkgutil, typing, importlib.util
+import logging, inspect, pkgutil, typing, types, importlib, importlib.util
 
 class ModuleUtl:
     @staticmethod
@@ -13,7 +13,7 @@ class ModuleUtl:
         return inspect.ismodule(o)
 
     @staticmethod
-    def is_imported(self, module_name:str):
+    def is_imported(module_name:str):
         spec = importlib.util.find_spec(module_name)
         return True if spec else False
 
@@ -23,19 +23,25 @@ class ModuleUtl:
 
     @staticmethod
     def get_module_info(func_or_method_or_type: typing.Any):
-        return inspect.getmodule(func_or_method_or_type).__name__, func_or_method_or_type.__name__
+        m = inspect.getmodule(func_or_method_or_type)
+        if not m: raise RuntimeError("Can't find module info")
+        return m.__name__, func_or_method_or_type.__name__
 
     @staticmethod
-    def import_submodule_recursively(module: typing.Any, is_pkg_useable:bool = None):
+    def import_submodule_recursively(module: typing.Any, is_pkg_useable:bool|None = None):
         submodules = dict()
 
         if is_pkg_useable:
             is_pkg_useable = False
 
-        for loader, submodule_name, is_pkg in pkgutil.walk_packages(module.__path__, module.__name__ + "."):
+        for module_finder, submodule_name, is_pkg in pkgutil.walk_packages(module.__path__, module.__name__ + "."):
             try:
                 if is_pkg_useable or not is_pkg:
-                    submodule = loader.find_module(submodule_name).load_module(submodule_name)
+                    # module_spec = module_finder.find_spec(submodule_name)
+                    # if not module_spec: continue
+
+                    # submodule = module_spec.load_module(submodule_name)
+                    submodule = importlib.import_module(submodule_name)
                     submodules.update({ submodule_name : submodule })
             except BaseException as ex:
                 logging.exception(f"Got exception when load this module of '{submodule_name}'")
@@ -46,11 +52,10 @@ class ModuleUtl:
         return submodules
 
     @staticmethod
-    def import_module(*module_names: str, **kwargs: typing.Any):
+    def import_module(*module_names: str, **kwargs: typing.Any) -> dict[str, types.ModuleType]:
         modules = dict()
 
-        if not module_names:
-            return []
+        if not module_names: return {}
         
         for module_name in module_names:
             try:
@@ -71,7 +76,7 @@ class ModuleUtl:
             logging.info(f"Import submodules: {','.join(submodules.keys())}")
 
     @staticmethod
-    def scan_module(module_name:str , is_recursive:bool = None):
+    def scan_module(module_name:str , is_recursive:bool|None = None):
         if not is_recursive:
             is_recursive = False
 
@@ -82,4 +87,5 @@ class ModuleUtl:
             #子模块
             if not is_recursive: continue
             for loader, submodule_name, is_pkg in pkgutil.walk_packages(module.__path__, module.__name__ + '.'):
-                yield loader.find_module(submodule_name).load_module(submodule_name)
+                # yield loader.find_module(submodule_name).load_module(submodule_name)
+                yield importlib.import_module(submodule_name)

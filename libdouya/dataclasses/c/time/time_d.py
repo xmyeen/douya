@@ -10,14 +10,15 @@ from timeit import default_timer as timer
 
 F = typing.TypeVar("F", bound = typing.Callable[..., typing.Any])
 P = typing.ParamSpec("P")
+C = typing.Callable[typing.Concatenate[float, P], typing.Any]
 
 class time_d(object):
-    def __init__(self, callback: typing.Callable[[float, P], typing.Any] = None, *args:typing.Any, **kwargs:typing.Any):
+    def __init__(self, callback: C|None = None, *args:typing.Any, **kwargs:typing.Any):
         self.__callback = callback
         self.__callback_args = args
         self.__callback_kwargs = kwargs
-        self.__start_time: float = None
-        self.__end_time: float = None
+        self.__start_time: float|None = None
+        self.__end_time: float|None = None
 
     @property
     def seconds(self) -> float:
@@ -27,7 +28,8 @@ class time_d(object):
         return self.__end_time - self.__start_time
 
     def dang(self):
-        if self.callback: self.callback(self.seconds, *self.__callback_args, **self.__callback_kwargs)
+        if self.__callback: 
+            self.__callback(self.seconds, *self.__callback_args, **self.__callback_kwargs)
 
     def __enter__(self):
         self.__end_time = self.__start_time = timer()

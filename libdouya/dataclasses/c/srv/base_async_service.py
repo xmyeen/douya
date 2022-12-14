@@ -10,7 +10,7 @@ class BaseAsyncService(IDyService):
         IDyService.__init__(self)
         self.__configuration = None
         self.__code = None
-        self.__dbs = None
+        self.__dbs = Databases()
 
     def __await__(self):
         yield from self.serve()
@@ -23,14 +23,14 @@ class BaseAsyncService(IDyService):
         self.__dbs = dbs
 
     @property
-    def configuration(self) -> Dict[str,Any]: 
+    def configuration(self) -> dict[str,Any]: 
         return self.__configuration or {}
     @configuration.setter
-    def configuration(self, configuration:Dict[str, Any]):
+    def configuration(self, configuration:dict[str, Any]):
         self.__configuration = configuration
 
     @property
-    def code(self) -> str:
+    def code(self) -> str|None:
         return self.__code
     @code.setter
     def code(self, code:str):
@@ -44,18 +44,18 @@ class BaseAsyncService(IDyService):
         self.configuration.update(parallel_mode = parallel_mode)
 
     @property
-    def parallel_number(self) -> str:
+    def parallel_number(self) -> int:
         return int(self.configuration.get('parallel_number', 1))
     @parallel_number.setter
     def parallel_number(self, parallel_number:int):
         self.configuration.update(parallel_number = parallel_number)
 
     @property
-    def schedule_configuration(self) -> Dict[str,Any]:
+    def schedule_configuration(self) -> dict[str,Any]:
         return self.configuration.get('schedule', {})
     @schedule_configuration.setter
-    def schedule_configuration(self, schedule_configuration:Dict[str,Any]):
-        self.configuration.update('schedule', schedule_configuration)
+    def schedule_configuration(self, schedule_configuration:dict[str,Any]):
+        self.configuration.update(schedule = schedule_configuration)
 
     async def initialize(self):
         pass

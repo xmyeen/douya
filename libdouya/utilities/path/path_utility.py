@@ -10,7 +10,7 @@ from typing import List
 
 class PathUtl:
     @staticmethod
-    def to_unique(*path_strings:List[str]) -> List[str]:
+    def to_unique(*path_strings:str) -> list[str]:
         '''路径去重复
         注：该方法不会改变目录的先后顺序
         '''
@@ -42,7 +42,7 @@ class PathUtl:
         return PathUtl.cov_to_nt_path(path_string) if 'nt' == os.name else PathUtl.cov_to_posix_path(path_string)
 
     @staticmethod
-    def is_sub(parent_path_string:str, *child_path_strings:List[str]) -> bool:
+    def is_sub(parent_path_string:str, *child_path_strings:str) -> bool:
         parent_posix_path_string = PathUtl.cov_to_posix_path(parent_path_string)
 
         for child_path_string in child_path_strings:
@@ -53,7 +53,7 @@ class PathUtl:
         return True
 
     @staticmethod
-    def find_sub(parent_path_string:str, *child_path_strings:List[str]) -> bool:
+    def find_sub(parent_path_string:str, *child_path_strings:str) -> list[str]:
         parent_posix_path_string = PathUtl.cov_to_posix_path(parent_path_string)
 
         sub_paths = []

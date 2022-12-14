@@ -2,8 +2,6 @@
 #!/usr/bin/env python
 
 from abc import abstractmethod
-from typing import Any
-from attrbox import AttrDict
 from ...i.rdb import IDatabaseDeclarative, IDatabases
 from .parent.base_configer import BaseConfiger
 

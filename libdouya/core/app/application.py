@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import os, sys, logging.config, getopt, time, select, errno, asyncio
-from typing import List
-
+import os, sys, logging, logging.config, getopt, time, select, errno, asyncio
+from typing import Any
 from ...definations.cfg import DY_CONFIGURATION_KEY_DEF, EnvDefs, ConfigerDefs
 from ...dataclasses.i.rdb import IDatabaseDeclarative
 # from ...dataclasses.i.srv import IDyService
@@ -54,7 +53,7 @@ class DyApplication(object):
             datacaches = datacache_configer.make_data_caches()
             DatacacheMgr.get_instance().add(*datacaches)
 
-        dbs: Databases = None
+        dbs: Databases | None = None
         if declaratives := self.get_database_declaratives():
             with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as database_configer:
                 dbs = database_configer.initialize_and_get_databases(*declaratives)
@@ -140,26 +139,26 @@ class DyApplication(object):
     @property
     def exe(self) -> str: return f'{sys.argv[0]}' 
 
-    def get_env(self) -> str: return self.__env
+    def get_env(self) -> str | None: return self.__env
     def set_env(self, env:str): self.__env = env
     env = property(get_env, None, None, "环境")
 
-    def get_usage(self) -> List[str]: return f'{self.exe}'
+    def get_usage(self) -> str: return f'{self.exe}'
     # usage = property(get_usage, None, None, "使用说明")
 
-    def get_env_configurations(self) -> List[str]: return self.__env_configurations
+    def get_env_configurations(self) -> list[str]: return self.__env_configurations
     # env_configurations = property(get_env_configurations, None, None, "环境配置")
 
-    def get_configurations(self) -> List[str]: return self.__configurations
+    def get_configurations(self) -> list[dict[str,Any]]: return self.__configurations
     # configurations = property(get_configurations, None, None, "配置")
 
-    def get_database_declaratives(self) -> List[IDatabaseDeclarative]: return None
+    def get_database_declaratives(self) -> list[IDatabaseDeclarative]: return []
 
     def parse_cmdline(self):
         opts, *_ = getopt.getopt(sys.argv[1:], "hc:", ["help", "env=", "configuration-file=", "env-configuration-file="])
         for name, value in opts:
             if name in [ "-h", "--help"]:
-                print(self.usage)
+                print(self.get_usage())
                 sys.exit(0)
             elif name in [ "--env" ]:
                 self.env = value

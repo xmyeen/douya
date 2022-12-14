@@ -12,5 +12,5 @@ class ServiceConfiger(BaseConfiger):
         BaseConfiger.__init__(self)
 
     @abstractmethod
-    def group_services(self, dbs: Databases) -> typing.Iterable[typing.List[IDyService]]:
+    def group_services(self, dbs: Databases) -> typing.Iterable[list[IDyService]]:
         pass
