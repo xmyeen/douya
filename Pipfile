@@ -1,5 +1,5 @@
 [[source]]
-name = "pbg"
+name = "aliyun"
 url = "https://mirrors.aliyun.com/pypi/simple"
 trusted-host = "mirrors.aliyun.com"
 verify_ssl = false
@@ -28,16 +28,6 @@ tests = "python -m pytest"
 
 [packages]
 douya = {editable = true, path = "."}
-pytest = "*"
-pytest-cov = "*"
-flake8 = "*"
-attrbox = "*"
-concurrent-log-handler = "*"
-croniter = "*"
-toml = "*"
-sanic = "*"
-pony = "*"
-sqlalchemy = {extras = ["postgresql_psycopg2cffi"], version = "*"}
 
 [requires]
 python_version = "3"
