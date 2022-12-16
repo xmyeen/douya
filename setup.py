@@ -15,12 +15,11 @@ setup(
     packages = find_packages(exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]),
     platforms = ["all"],
     classifiers = [
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS :: MacOS X"
     ],
-    python_requires='>=3.10'
+    python_requires='>=3.11'
 )
