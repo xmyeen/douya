@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any,Self
 from ....definations.err import ErrorDefs
 from ..err import DyError
 
@@ -13,7 +13,7 @@ class Pagination:
     total: int
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> 'Pagination'|None:
+    def from_dict(data:dict[str, Any]) -> Self | None:
         if not data: return None
         
         offset_data = data.get('offset')
@@ -32,7 +32,7 @@ class Pagination:
         )
 
     @staticmethod
-    def from_page(page_number:int, page_size:int, total_size:int = -1) -> 'Pagination':
+    def from_page(page_number:int, page_size:int, total_size:int = -1) -> Self:
         if 0 >= page_number: 
             raise DyError(ErrorDefs.ARG_VALIDATION_FAILED.value, title = "Make response failed", error_message = "Miss 'page_number' parameter", page_number = page_number).as_exception()
         

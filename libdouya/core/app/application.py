@@ -79,10 +79,11 @@ class DyApplication(object):
         # for task in tasks:
             # self.__wait_forever()
             # self.__halt_event.wait()
-
         loop = asyncio.get_event_loop()
+
         try:
-            loop.run_until_complete(asyncio.wait(tasks))
+            # loop.run_until_complete(asyncio.wait(tasks))
+            loop.run_until_complete(asyncio.wait([ asyncio.ensure_future(task) for task in tasks]))
         except (KeyboardInterrupt, ):
             pass
         finally:

@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Self, Any
 
 @dataclass
 class Statusdata(object):
@@ -11,7 +11,7 @@ class Statusdata(object):
     message: str|None = None
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> 'Statusdata' | None:
+    def from_dict(data:dict[str, Any]) -> Self | None:
         if not data: return None
 
         id_data = data.get('id')

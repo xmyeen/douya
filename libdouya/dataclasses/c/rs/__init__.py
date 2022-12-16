@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from typing import Any,Dict,List
+from typing import Any,Self
 from dataclasses import dataclass, field, asdict
 from ....definations.err import ErrorDefs
 from ..err import DyError
@@ -19,7 +19,7 @@ class Req(object):
         return asdict(self)
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> 'Req' | None:
+    def from_dict(data:dict[str, Any]) -> Self | None:
         if not data: return None
         
         metadata_data = data.get('metadata')
@@ -31,7 +31,7 @@ class Req(object):
         )
 
     @staticmethod
-    def build(data:Any, version:str = "v1", metadata:Metadata|None = None) -> 'Req':
+    def build(data:Any, version:str = "v1", metadata:Metadata|None = None) -> Self:
         return Req(
             version = version,
             metadata = metadata,
@@ -49,7 +49,7 @@ class Res(object):
         return asdict(self)
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> 'Res' | None:
+    def from_dict(data:dict[str, Any]) -> Self | None:
         if not data: return None
         
         statusdata_data = data.get('statusdata')
@@ -72,7 +72,7 @@ class Res(object):
         return (ErrorDefs.SUCCESS.value == self.statusdata.id) if self.statusdata else False
 
     @staticmethod
-    def success(*datas: Any):
+    def success(*datas: Any) -> Self:
         return Res (
             version = "v1",
             statusdata = Statusdata(
@@ -84,7 +84,7 @@ class Res(object):
         )
 
     @staticmethod
-    def fail(err: DyError,  *datas: Any):
+    def fail(err: DyError,  *datas: Any) -> Self:
         return Res (
             version = "v1",
             statusdata = Statusdata(

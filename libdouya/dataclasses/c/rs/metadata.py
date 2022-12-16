@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from dataclasses import dataclass
-from typing import Any,Dict
+from typing import Any,Self
 from ....definations.err import ErrorDefs
 # from ..c.err import DyError
 from .pagination import Pagination
@@ -16,7 +16,7 @@ class Metadata(object):
     track_service_url: str|None = None
 
     @staticmethod
-    def from_dict(data:dict[str, Any]):
+    def from_dict(data:dict[str, Any]) -> Self | None:
         if not data: return None
         pagination_data = data.get('pagination')
 
