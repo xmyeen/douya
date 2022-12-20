@@ -18,7 +18,7 @@ def mkerr(id: Union[int, ErrorDefs], *error_messages: Any, **keyword_argument: A
         raise RuntimeError(' - '.join([ str(em) for em in error_messages]))
 
     return builder \
-        .and_other_error_messages(*error_messages) \
+        .and_other_error_messages([ str(em) for em in error_messages ]) \
         .and_keyword_argument(keyword_argument) \
         .build()
 

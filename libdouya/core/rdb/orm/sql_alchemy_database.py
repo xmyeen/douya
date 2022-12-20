@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import logging
+import logging, os
 from urllib.parse import urlparse
 from typing import Any,Dict
 from contextlib import contextmanager
@@ -42,8 +42,23 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
 
     def connect(self, enable_scheme_rebuiding:bool):
         connection_options = self.connection_options or []
-        
-        self.__engine = create_engine(self.connection_url)
+
+        final_connection_url = self.connection_url
+
+        u = urlparse(self.connection_url)
+        if u.scheme is None:
+            raise RuntimeError(f"Invalid database url. No 'scheme' found : {self.connection_url}")
+        elif u.scheme.lower() == DialectDef.SQLITE.value.lower():
+            if u.path not in ['', '/', '/:memory:']:
+                if db_dir := self.configuration.get("db_dir"):
+                    db_dir_path = db_dir.replace('\\', '/')
+                    if not db_dir.startswith('/'): db_dir_path = f'/{db_dir_path}'
+
+                    final_connection_url = self.connection_url.replace(u.path, f'{db_dir_path}{u.path}')
+
+        logging.debug(f"Make engine for database: {final_connection_url}")
+        self.__engine = create_engine(final_connection_url)
+
         if enable_scheme_rebuiding:
             if OptDef.DROPPING_TABLES.value in connection_options:
                 self.declarative.internal_implementation.metadata.drop_all(self.__engine)
@@ -68,11 +83,17 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
                 s.rollback()
                 raise DyError(ErrorDefs.DB_OPERATE_FAILED.value, "Operate Database Failed", str(e)).as_exception()
 
+class SqlAlchemyTableBase(object):
+    def __init__(self): pass
+
+    def to_dict(self) -> dict[str, Any]:
+        return { c.name : getattr(self, c.name, None) for c in self.__table__.columns } # type: ignore # ignore: type
+
 @obj_d(OrmDef.SQLALCHEMY_ORM.value)
 class SqlAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):
     def __init__(self, code_name:str):
         BaseDatabaseDeclarative.__init__(self, code_name)
-        self.__base : DeclarativeMeta  = declarative_base()
+        self.__base : DeclarativeMeta  = declarative_base(cls = SqlAlchemyTableBase)
 
     @property
     def table(self) -> Any:
