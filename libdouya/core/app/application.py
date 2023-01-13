@@ -65,6 +65,7 @@ class DyApplication(object):
                     tasks.append(ServiceTask(*srvs))
         if not tasks:
             raise RuntimeError("No service task found")
+        tasks.append(self.__wait_sleep())
 
         logging.info("Startup application")
         # if 'nt' == os.name:
@@ -84,50 +85,79 @@ class DyApplication(object):
         try:
             # loop.run_until_complete(asyncio.wait(tasks))
             loop.run_until_complete(asyncio.wait([ asyncio.ensure_future(task) for task in tasks]))
-        except (KeyboardInterrupt, ):
-            pass
+        except (KeyboardInterrupt, SystemExit):
+            logging.info('SIGINT or CTRL-C detected. Exiting gracefully')
         finally:
             logging.info("Shutdown application")
 
-    # def __wait_forever(self):
-    #     # Wait forever
-    #     try:
-    #         # rfd, wfd = os.pipe()
-    #         # os.close(wfd)
+    def __wait_sleep(self):
+        # Wait forever
+        # try:
+        #     # rfd, wfd = os.pipe()
+        #     # os.close(wfd)
 
-    #         while True:
-    #             # try:
-    #             #     select.select([], [], [])
-    #             # except select.error as e:
-    #             #     logging.exception("Got some exception")
-    #             #     if e.args[0] != errno.EINTR:
-    #             #         raise
+        #     while True:
+        #         # try:
+        #         #     select.select([], [], [])
+        #         # except select.error as e:
+        #         #     logging.exception("Got some exception")
+        #         #     if e.args[0] != errno.EINTR:
+        #         #         raise
 
-    #             if os.name == "posix":
-    #                 # NOTE(sileht): we cannot use threading.Event().wait(),
-    #                 # threading.Thread().join(), or time.sleep() because signals
-    #                 # can be missed when received by non-main threads
-    #                 # (https://bugs.python.org/issue5315)
-    #                 # So we use select.select() alone, we will receive EINTR or
-    #                 # will read data from signal_r when signal is emitted and
-    #                 # cpython calls PyErr_CheckSignals() to run signals handlers
-    #                 # That looks perfect to ensure handlers are run and run in the
-    #                 # main thread
-    #                 try:
-    #                     select.select([self.signal_pipe_r], [], [])
-    #                 except select.error as e:
-    #                     if e.args[0] != errno.EINTR:
-    #                         raise
-    #             else:
-    #                 # NOTE(sileht): here we do only best effort
-    #                 # and wake the loop periodically, set_wakeup_fd
-    #                 # doesn't work on non posix platform so
-    #                 # 1 seconds have been picked with the advice of a dice.
-    #                 time.sleep(1)
-    #     except (KeyboardInterrupt, SystemExit):
-    #         logging.info('SIGINT or CTRL-C detected. Exiting gracefully')
-    #     except:
-    #         logging.exception("Got some exception")
+        #         if os.name == "posix":
+        #             # NOTE(sileht): we cannot use threading.Event().wait(),
+        #             # threading.Thread().join(), or time.sleep() because signals
+        #             # can be missed when received by non-main threads
+        #             # (https://bugs.python.org/issue5315)
+        #             # So we use select.select() alone, we will receive EINTR or
+        #             # will read data from signal_r when signal is emitted and
+        #             # cpython calls PyErr_CheckSignals() to run signals handlers
+        #             # That looks perfect to ensure handlers are run and run in the
+        #             # main thread
+        #             try:
+        #                 # select.select([self.signal_pipe_r], [], [])
+        #                 select.select([], [], [])
+        #             except select.error as e:
+        #                 if e.args[0] != errno.EINTR:
+        #                     raise
+        #         else:
+        #             # NOTE(sileht): here we do only best effort
+        #             # and wake the loop periodically, set_wakeup_fd
+        #             # doesn't work on non posix platform so
+        #             # 1 seconds have been picked with the advice of a dice.
+        #             time.sleep(1)
+        #         yield
+        # except (KeyboardInterrupt, SystemExit):
+        #     logging.info('SIGINT or CTRL-C detected. Exiting gracefully')
+        # except:
+        #     logging.exception("Got some exception")
+
+        while True:
+            if os.name == "posix":
+                # NOTE(sileht): we cannot use threading.Event().wait(),
+                # threading.Thread().join(), or time.sleep() because signals
+                # can be missed when received by non-main threads
+                # (https://bugs.python.org/issue5315)
+                # So we use select.select() alone, we will receive EINTR or
+                # will read data from signal_r when signal is emitted and
+                # cpython calls PyErr_CheckSignals() to run signals handlers
+                # That looks perfect to ensure handlers are run and run in the
+                # main thread
+                try:
+                    # select.select([self.signal_pipe_r], [], [])
+                    select.select([], [], [])
+                except select.error as e:
+                    if e.args[0] != errno.EINTR:
+                        raise
+            else:
+                # NOTE(sileht): here we do only best effort
+                # and wake the loop periodically, set_wakeup_fd
+                # doesn't work on non posix platform so
+                # 1 seconds have been picked with the advice of a dice.
+                time.sleep(0.1)
+            
+            # Release CPU for other tasks once
+            yield
 
     # # def __quit_win32(self, sig):
     # #     logging.info('SIGINT or CTRL-C detected. Exiting gracefully')
