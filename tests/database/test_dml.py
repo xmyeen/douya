@@ -13,7 +13,7 @@
 # from libdouya.core.mgr import ConfigurationMgr
 # # import libdouya.core.configer.db.database_configer
 # import libdouya.core.rdb.orm.pony_database
-# import libdouya.core.rdb.orm.sql_alchemy_database
+# import libdouya.core.rdb.orm.sqlalchemy_database
 # # from decimal import Decimal, Subnormal
 
 # def test_sqlalchemy_dml():

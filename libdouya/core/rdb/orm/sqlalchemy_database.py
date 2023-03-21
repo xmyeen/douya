@@ -20,7 +20,7 @@ from ....dataclasses.c.err import DyError
 from ...deco import obj_d
 from .parent.base_database import BaseDatabaseDeclarative, BaseDatabaseProxy
 
-class SqlAlchemyDatabase(BaseDatabaseProxy):
+class SQLAlchemyDatabase(BaseDatabaseProxy):
     def __init__(self, id:str, declarative: IDatabaseDeclarative, **configuration: Any):
         BaseDatabaseProxy.__init__(self, id, declarative, **configuration)
         self.__session_factory = None
@@ -57,7 +57,13 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
                     final_connection_url = self.connection_url.replace(u.path, f'{db_dir_path}{u.path}')
 
         logging.debug(f"Make engine for database: {final_connection_url}")
-        self.__engine = create_engine(final_connection_url)
+        self.__engine = create_engine(
+            final_connection_url,
+            pool_size = int(self.configuration.get("pool_size", 10)), #默认是10个
+            pool_recycle = int(self.configuration.get("pool_timeout", -1)), # 默认不回收线程池
+            echo = bool(self.configuration.get("echo", False)), # 打印数据库相关
+            echo_pool = bool(self.configuration.get("echo", False)) # 打印数据库相关
+        )
 
         if enable_scheme_rebuiding:
             if OptDef.DROPPING_TABLES.value in connection_options:
@@ -83,17 +89,17 @@ class SqlAlchemyDatabase(BaseDatabaseProxy):
                 s.rollback()
                 raise DyError(ErrorDefs.DB_OPERATE_FAILED.value, "Operate Database Failed", str(e)).as_exception()
 
-class SqlAlchemyTableBase(object):
+class SQLAlchemyTableBase(object):
     def __init__(self): pass
 
     def to_dict(self) -> dict[str, Any]:
         return { c.name : getattr(self, c.name, None) for c in self.__table__.columns } # type: ignore # ignore: type
 
 @obj_d(OrmDef.SQLALCHEMY_ORM.value)
-class SqlAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):
+class SQLAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):
     def __init__(self, code_name:str):
         BaseDatabaseDeclarative.__init__(self, code_name)
-        self.__base : DeclarativeMeta  = declarative_base(cls = SqlAlchemyTableBase)
+        self.__base : DeclarativeMeta  = declarative_base(cls = SQLAlchemyTableBase)
 
     @property
     def table(self) -> Any:
@@ -104,4 +110,4 @@ class SqlAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):
         return self.__base
 
     def make_proxy(self, **configuration:Any) -> IDatabaseProxy:
-        return SqlAlchemyDatabase(self.code_name, self, **configuration)
+        return SQLAlchemyDatabase(self.code_name, self, **configuration)
