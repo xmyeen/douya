@@ -12,7 +12,7 @@ setup(
     name = "douya",
     author = 'xmyeen@163.com',
     author_email = "xmyeen@163.com",
-    packages = find_packages(exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages = find_packages(exclude = ["examples.*", "*.tests", "*.tests.*", "tests.*", "tests"]),
     platforms = ["all"],
     classifiers = [
         "Programming Language :: Python :: 3.11",
