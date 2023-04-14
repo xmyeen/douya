@@ -1,8 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from setuptools import find_packages
-from assemtools import setup, on_version, on_description, on_requirement
+from assemtools import find_packages, setup, on_version, on_description, on_requirement
 
 setup(
     on_version('0.0.2', dev_release='git'),

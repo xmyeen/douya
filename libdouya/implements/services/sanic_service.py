@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import types
+import types, socket, os
 from typing import Any, Coroutine
 from sanic import Sanic
 from sanic.blueprint_group import BlueprintGroup
@@ -35,6 +35,15 @@ class SanicAsyncService(BaseAsyncService):
         '''
 
     async def serve(self) -> None:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if 'nt' != os.name:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            sock.bind((self.configuration.get('host'), self.configuration.get('port')))
+            sock.listen(self.parallel_number)
+        else:
+            sock.bind((self.configuration.get('host'), self.configuration.get('port')))
+
         sanic_configuration = dict(
             host = self.configuration.get('host'),
             port = self.configuration.get('port'),
@@ -45,7 +54,7 @@ class SanicAsyncService(BaseAsyncService):
         if blueprint := self.get_blueprint():
             self.sanic.blueprint(blueprint)
 
-        svr = await self.sanic.create_server(**sanic_configuration)
+        svr = await self.sanic.create_server(sock = sock, **sanic_configuration)
         if not svr: raise RuntimeError("Create server failed")
         
         await svr.startup()    
