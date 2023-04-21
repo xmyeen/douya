@@ -66,6 +66,7 @@ db_dir = ""
 
 
 [{DY_CONFIGURATION_KEY_DEF.LOGGER_FILE_CONFIG}]
+uri = "logging.toml"
 [{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}]
 version = 1
 disable_existing_loggers = false

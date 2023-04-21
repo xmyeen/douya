@@ -164,14 +164,11 @@ class ConfigurationMgr(metaclass = Singleton):
         else:
             self.__configuration = parsed_configuration
         
-        for dp in self.__env_cfg.configuration_directories:
-            for fp in self.__env_cfg.configuration_names:
-                p = os.path.join(dp, fp)
-                try:
-                    self.load_configuration_file(p)
-                except BaseException as e:
-                    print(e)
-                    logging.exception(f"Failed to load configuration file - path({p})")
+        configuration_file_set = set(os.path.join(dp, fp) for dp in self.__env_cfg.configuration_directories for fp in self.__env_cfg.configuration_names)
+        try:
+            self.load_configuration_files(*configuration_file_set)
+        except BaseException as e:
+            logging.exception(f"Failed to load configuration file - path({','.join(configuration_file_set)})")
 
         # 环境变量可以覆盖其他变量
         self.__env_cfg.write_to(self.__configuration)
@@ -229,24 +226,29 @@ class ConfigurationMgr(metaclass = Singleton):
         if not isinstance(configuration, dict): return
         dict_merge(self.__configuration, configuration)
 
-    def load_configuration_file(self, path_like: pathlib.Path|str):
+    def load_configuration_files(self, *path_likes: pathlib.Path|str):
         '''
         读取配置文件
         '''
         ipaths = []
         
         # 读取配置文件并合并配置
-        if os.path.exists(path_like):
-            dict_merge(self.__configuration, TmlUtl.load(path_like, None))
-            ipaths.append(str(path_like))
+        for path_like in path_likes:
+            path_string = os.path.abspath(path_like)
+            if os.path.exists(path_string) and (path_string not in ipaths):
+                ipaths.append(path_string)
 
-        for p in self.__walk_app_env_files_with_same_directory(path_like, True):
-            dict_merge(self.__configuration, TmlUtl.load(p, None))
-            ipaths.append(p)
-
-        logging.info(f'Load configuration files: {":".join(ipaths)}')
-        
         # 如果存在其他环境版本的配置文件，则读取，并合并
+        for path_like in path_likes:
+            for p in self.__walk_app_env_files_with_same_directory(path_like, True):
+                path_string = os.path.abspath(p)
+                if path_string not in ipaths:
+                    ipaths.append(path_string)
+
+        for p in ipaths:
+            logging.info(f"Load configuration file: {p}")
+            dict_merge(self.__configuration, TmlUtl.load(p, None))
+        
 
     def as_run_diretory(self, sub_path: pathlib.Path|str|None = None) -> str:
         p = self.get_conf(DY_CONFIGURATION_KEY_DEF.RUN_CATALOG_DIR)

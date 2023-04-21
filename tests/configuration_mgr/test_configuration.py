@@ -46,7 +46,7 @@ def test_merge_configuration():
             f.write(json.dumps(dict(catalog = dict(data_dir = "abc")), ensure_ascii=False))
             f.flush()
 
-        ConfigurationMgr.get_instance().load_configuration_file(name)
+        ConfigurationMgr.get_instance().load_configuration_files(name)
         assert(os.path.abspath("abc") == ConfigurationMgr.get_instance().as_data_diretory())
 
 def test_appenv_confs(make_temp_env_of_app_cfg):

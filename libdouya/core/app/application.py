@@ -12,6 +12,12 @@ from ...utilities.module import ModuleUtl
 from ..srv import ServiceTask
 from ..mgr import ConfigurationMgr, NamingMgr, DatacacheMgr
 
+#默认的日志配置
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s - %(process)d:%(thread)d - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+    handlers = [logging.StreamHandler(sys.stdout)]
+)
 
 # Windows信号时
 # SIGINT      Ctrl+C中断
@@ -41,17 +47,21 @@ class DyApplication(object):
         for c in self.get_configurations():
             ConfigurationMgr.get_instance().merge_configuration(c)
 
+        not_configued = True
         try:
-            log_conf : dict[str,Any] = ConfigurationMgr.get_instance().get_conf(DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG)
-            log_config_name : str = ConfigurationMgr.get_instance().get_conf(DY_CONFIGURATION_KEY_DEF.LOGGER_FILE_CONFIG, "logging.toml")
-            if (log_config_file := next(ConfigurationMgr.get_instance().walk_app_files(log_config_name))) and (os.path.exists(log_config_file)):
-                logging.config.fileConfig(log_config_file)
-            else:
+            if not_configued and (log_uri := ConfigurationMgr.get_instance().get_conf(f'{DY_CONFIGURATION_KEY_DEF.LOGGER_FILE_CONFIG}.uri')):
+                if log_cfs := list(ConfigurationMgr.get_instance().walk_app_files(log_uri)):
+                    logging.config.fileConfig(log_cfs[-1])
+                    not_configued = False
+            
+            if not_configued and (log_conf := ConfigurationMgr.get_instance().get_conf(DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG) ):
                 logging.config.dictConfig(log_conf)
+                not_configued = False
         except:
-            logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=logging.INFO)
-
-        logging.debug(str(ConfigurationMgr.get_instance().configuration))
+            logging.exception("Got an exception")
+        finally:
+            if not_configued: logging.debug("No logging configuration. We use default")
+            logging.debug(str(ConfigurationMgr.get_instance().configuration))
 
         DatacacheMgr.get_instance().initialize()
         if datacache_configer := ConfigurationMgr.get_instance().try_to_get_configer(ConfigerDefs.DATACACHE.value):

@@ -105,7 +105,7 @@ class TmlUtl(object):
     @staticmethod
     def load(file_path_like: Path|str, lan:TmlDefs|None = None, input_encoding:str|None = None, *args, **kwargs) -> dict[str,Any]:
         if not os.path.exists(file_path_like):
-            raise DyError(ErrorDefs.NO_FILE_FOUND.value, title = "No fild found", error_message = f"Lost file '{file_path_like}'").as_exception()
+            raise DyError(ErrorDefs.NO_FILE_FOUND.value, title = "No file found", error_message = f"Lost file '{file_path_like}'").as_exception()
 
         file_path = Path(file_path_like) if isinstance(file_path_like, str) else file_path_like
         lan_en = TmlUtl.guess_file(file_path) if not lan else lan
