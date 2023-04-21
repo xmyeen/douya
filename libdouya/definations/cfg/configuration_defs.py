@@ -27,7 +27,8 @@ DY_CONFIGURATION_KEY_DEF = AttrDict(
     BACKUP_CATALOG_DIR = "catalog.backup_dir",
     RUN_CATALOG_DIR = "catalog.run_dir",
     # 日志配置项
-    LOGGER = "log"
+    LOGGER_CONFIG = "log.config"
+    LOGGER_FILE_CONFIG = "log.file_config"
 )
 
 @enum.unique

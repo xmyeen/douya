@@ -64,24 +64,26 @@ db_dir = ""
 {DY_CONFIGURATION_KEY_DEF.DATA_CATALOG_DIR[len(DY_CONFIGURATION_KEY_DEF.CATALOG)+1:]} = "var"
 {DY_CONFIGURATION_KEY_DEF.RUN_CATALOG_DIR[len(DY_CONFIGURATION_KEY_DEF.CATALOG)+1:]} = "run"
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}]
+
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_FILE_CONFIG}]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}]
 version = 1
 disable_existing_loggers = false
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.formatters.startdard_fmt]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.formatters.startdard_fmt]
 format = "%(asctime)s | %(process)d:%(thread)d | %(levelname)s | (%(name)s)[%(filename)s:%(lineno)d] | %(message)s"
 datefmt = "%Y-%m-%d %H:%M:%S"
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.formatters.http_access_fmt]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.formatters.http_access_fmt]
 format = "%(asctime)s | %(process)d:%(thread)d | %(levelname)s | (%(name)s)[%(filename)s:%(lineno)d] | [%(host)s]: %(request)s %(message)s %(status)d %(byte)d"
 datefmt = "%Y-%m-%d %H:%M:%S"
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.handlers.debug_console_handler]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.handlers.debug_console_handler]
 class = "logging.StreamHandler"
 level = "DEBUG"
 formatter = "startdard_fmt"
 stream = "ext://sys.stdout"
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.handlers.generic_handler]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.handlers.generic_handler]
 class = "concurrent_log_handler.ConcurrentRotatingFileHandler"
 level = "INFO"
 formatter = "startdard_fmt"
@@ -91,7 +93,7 @@ encoding = "utf-8"
 maxBytes = {10 * 1024 * 1024}
 backupCount = 10
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.handlers.fault_handler]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.handlers.fault_handler]
 class = "concurrent_log_handler.ConcurrentRotatingFileHandler"
 level = "ERROR"
 formatter = "startdard_fmt"
@@ -101,7 +103,7 @@ encoding = "utf-8"
 maxBytes = {10 * 1024 * 1024}
 backupCount = 10
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.handlers.http_access_handler]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.handlers.http_access_handler]
 class = "concurrent_log_handler.ConcurrentRotatingFileHandler"
 level = "NOTSET"
 formatter = "http_access_fmt"
@@ -111,11 +113,11 @@ encoding = "utf-8"
 maxBytes = {10 * 1024 * 1024}
 backupCount = 10
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.root]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.root]
 level = "NOTSET"
 handlers = [ "debug_console_handler", "generic_handler", "fault_handler" ]
 
-[{DY_CONFIGURATION_KEY_DEF.LOGGER}.loggers."sanic.access"]
+[{DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG}.loggers."sanic.access"]
 qualname = "sanic.access"
 level = "NOTSET"
 propagate = false

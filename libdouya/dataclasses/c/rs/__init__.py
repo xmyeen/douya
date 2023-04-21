@@ -4,7 +4,7 @@
 from typing import Any,Self
 from dataclasses import dataclass, field, asdict
 from ....definations.err import ErrorDefs
-from ..err import DyError
+from ...i.err import IDyError
 from .metadata import Metadata
 from .pagination import Pagination
 from .statusdata import Statusdata
@@ -84,7 +84,7 @@ class Res(object):
         )
 
     @staticmethod
-    def fail(err: DyError,  *datas: Any) -> Self:
+    def fail(err: IDyError,  *datas: Any) -> Self:
         return Res (
             version = "v1",
             statusdata = Statusdata(

@@ -190,7 +190,7 @@ class ConfigurationMgr(metaclass = Singleton):
         '''
         return self.__configuration
 
-    def get_conf(self, key_or_url:str, default_value:Any = None) -> AttrDict:
+    def get_conf(self, key_or_url:str, default_value:Any = None) -> Any:
         if DyUrlDefs.CONF.yes(key_or_url):
             key = parse_configer_key_by_url(key_or_url)
         else:

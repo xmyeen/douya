@@ -27,10 +27,11 @@ class ServiceThreadRunner(ServiceBaseRunner):
             logging.exception(f"Got '{self.service.code}' service exception")
         finally:
             try:
-                for task in asyncio.all_tasks():
-                    if task.done(): continue
-                    if task.cancel(): continue
-                    logging.warn(f"Cancel task '{task.get_name()}' failed")
+                if self.__loop.is_running():
+                    for task in asyncio.all_tasks():
+                        if task.done(): continue
+                        if task.cancel(): continue
+                        logging.warn(f"Cancel task '{task.get_name()}' failed")
             finally:
                 self.__loop.close()
 

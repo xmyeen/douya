@@ -41,9 +41,14 @@ class DyApplication(object):
         for c in self.get_configurations():
             ConfigurationMgr.get_instance().merge_configuration(c)
 
-        if log_conf := ConfigurationMgr.get_instance().get_conf(DY_CONFIGURATION_KEY_DEF.LOGGER):
-            logging.config.dictConfig(log_conf)
-        else:
+        try:
+            log_conf : dict[str,Any] = ConfigurationMgr.get_instance().get_conf(DY_CONFIGURATION_KEY_DEF.LOGGER_CONFIG)
+            log_config_name : str = ConfigurationMgr.get_instance().get_conf(DY_CONFIGURATION_KEY_DEF.LOGGER_FILE_CONFIG, "logging.toml")
+            if (log_config_file := next(ConfigurationMgr.get_instance().walk_app_files(log_config_name))) and (os.path.exists(log_config_file)):
+                logging.config.fileConfig(log_config_file)
+            else:
+                logging.config.dictConfig(log_conf)
+        except:
             logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=logging.INFO)
 
         logging.debug(str(ConfigurationMgr.get_instance().configuration))
