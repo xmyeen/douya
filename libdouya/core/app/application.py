@@ -16,7 +16,10 @@ from ..mgr import ConfigurationMgr, NamingMgr, DatacacheMgr
 logging.basicConfig(
     level = logging.DEBUG,
     format = '%(asctime)s - %(process)d:%(thread)d - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-    handlers = [logging.StreamHandler(sys.stdout)]
+    handlers = [
+        # logging.FileHandler("app_stdout.log", "w"),
+        logging.StreamHandler(sys.stdout)
+    ]
 )
 
 # Windows信号时

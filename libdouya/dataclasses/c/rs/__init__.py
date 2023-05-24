@@ -19,19 +19,15 @@ class Req(object):
         return asdict(self)
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> Self | None:
-        if not data: return None
-        
-        metadata_data = data.get('metadata')
-        
+    def of_dict(data:dict[str, Any]) -> 'Req':
         return Req(
             version = data.get('version', 'v1'),
-            metadata = metadata_data and Metadata.from_dict(metadata_data),
+            metadata = Metadata.of_dict(data.get('metadata') or {}),
             data = data.get('data', {})
         )
 
     @staticmethod
-    def build(data:Any, version:str = "v1", metadata:Metadata|None = None) -> Self:
+    def build(data:Any, version:str = "v1", metadata:Metadata|None = None) -> 'Req':
         return Req(
             version = version,
             metadata = metadata,
@@ -49,18 +45,11 @@ class Res(object):
         return asdict(self)
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> Self | None:
-        if not data: return None
-        
-        statusdata_data = data.get('statusdata')
-        if statusdata_data is None: return None
-
-        metadata_data = data.get('metadata')
-
+    def of_dict(data:dict[str, Any]) -> 'Res':
         return Res(
             version = data.get('version', 'v1'),
-            statusdata = Statusdata.from_dict(statusdata_data),
-            metadata = metadata_data and Metadata.from_dict(metadata_data),
+            statusdata = Statusdata.of_dict(data.get('statusdata') or {}),
+            metadata = Metadata.of_dict(data.get('metadata') or {}),
             datas = data.get('datas') or []
         )
 
@@ -72,7 +61,7 @@ class Res(object):
         return (ErrorDefs.SUCCESS.value == self.statusdata.id) if self.statusdata else False
 
     @staticmethod
-    def success(*datas: Any) -> Self:
+    def success(*datas: Any) -> 'Res':
         return Res (
             version = "v1",
             statusdata = Statusdata(
@@ -84,7 +73,7 @@ class Res(object):
         )
 
     @staticmethod
-    def fail(err: IDyError,  *datas: Any) -> Self:
+    def fail(err: IDyError,  *datas: Any) -> 'Res':
         return Res (
             version = "v1",
             statusdata = Statusdata(

@@ -16,13 +16,10 @@ class Metadata(object):
     track_service_url: str|None = None
 
     @staticmethod
-    def from_dict(data:dict[str, Any]) -> Self | None:
-        if not data: return None
-        pagination_data = data.get('pagination')
-
+    def of_dict(data:dict[str, Any]) -> 'Metadata':
         return Metadata(
             seq = data.get('seq'),
-            pagination = pagination_data and Pagination.from_dict(pagination_data),
+            pagination = Pagination.of_dict_or(data.get('pagination') or {}),
             passback = data.get('passback'),
             forwared_for = data.get('forwared_for'),
             track_service_url = data.get('track_service_url')
