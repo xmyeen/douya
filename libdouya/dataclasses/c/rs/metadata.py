@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Any,Self
 from ....definations.err import ErrorDefs
 # from ..c.err import DyError
@@ -24,4 +24,11 @@ class Metadata(object):
             forwared_for = data.get('forwared_for'),
             track_service_url = data.get('track_service_url')
         )
+    
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    def and_pagination(self, pagination: Pagination) -> Self:
+        self.pagination = pagination
+        return self
         

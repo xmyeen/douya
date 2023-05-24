@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Self,Any
 from ....definations.err import ErrorDefs
 from ..err import DyError
@@ -30,3 +30,6 @@ class Statusdata(object):
             return Statusdata.of_dict(data)
         except:
             return other
+        
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)

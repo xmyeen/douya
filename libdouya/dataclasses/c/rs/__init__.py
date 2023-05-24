@@ -15,9 +15,6 @@ class Req(object):
     metadata: Metadata|None = None
     data: dict[str,Any] = field(default_factory = dict)
 
-    def to_dict(self):
-        return asdict(self)
-
     @staticmethod
     def of_dict(data:dict[str, Any]) -> 'Req':
         return Req(
@@ -33,6 +30,13 @@ class Req(object):
             metadata = metadata,
             data = data
         )
+    
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+    
+    def and_metadata(self, metadata:Metadata) -> Self:
+        self.metadata = metadata
+        return self
 
 @dataclass
 class Res(object):
@@ -40,9 +44,6 @@ class Res(object):
     statusdata: Statusdata|None = None
     metadata: Metadata|None = None
     datas: list[Any] = field(default_factory=list)
-
-    def to_dict(self):
-        return asdict(self)
 
     @staticmethod
     def of_dict(data:dict[str, Any]) -> 'Res':
@@ -52,13 +53,6 @@ class Res(object):
             metadata = Metadata.of_dict(data.get('metadata') or {}),
             datas = data.get('datas') or []
         )
-
-    def copy_metadata(self, metadata:Metadata|None = None):
-        if metadata:
-            self.metadata = metadata
-
-    def is_ok(self) -> bool:
-        return (ErrorDefs.SUCCESS.value == self.statusdata.id) if self.statusdata else False
 
     @staticmethod
     def success(*datas: Any) -> 'Res':
@@ -83,6 +77,20 @@ class Res(object):
             ),
             datas = list(datas)
         )
+    
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+    
+    def and_status(self, statusdata:Statusdata) -> Self:
+        self.statusdata = statusdata
+        return self
+    
+    def and_metadata(self, metadata:Metadata) -> Self:
+        self.metadata = metadata
+        return self
+
+    def is_ok(self) -> bool:
+        return (ErrorDefs.SUCCESS.value == self.statusdata.id) if self.statusdata else False
 
 
 __all__ = [

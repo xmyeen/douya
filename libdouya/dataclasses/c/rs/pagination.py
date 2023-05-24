@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Any
 from ....definations.err import ErrorDefs
 from ..err import DyError
@@ -43,5 +43,8 @@ class Pagination:
         
         return Pagination(offset = (pn - 1) * page_size, limit =  ps, total = total_size)
     
-    def as_page_request(self) -> DataPageRequest:
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+    
+    def to_page_request(self) -> DataPageRequest:
         return DataPageRequest.of_offset(self.offset, self.limit)
