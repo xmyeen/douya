@@ -85,7 +85,7 @@ class Res(object):
         self.statusdata = statusdata
         return self
     
-    def and_metadata(self, metadata:Metadata) -> Self:
+    def and_meta(self, metadata:Metadata) -> Self:
         self.metadata = metadata
         return self
 
