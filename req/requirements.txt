@@ -1,4 +1,4 @@
-attrbox
+attrbox==0.1.1
 # tortoise-orm # 只有aiosqlite支持pypy，其他asyncpg/aiomysql/use asyncmy仅支持cython。
 concurrent_log_handler
 croniter
