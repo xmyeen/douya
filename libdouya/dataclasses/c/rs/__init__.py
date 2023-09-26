@@ -15,16 +15,16 @@ class Req(object):
     metadata: Metadata|None = None
     data: dict[str,Any] = field(default_factory = dict)
 
-    @staticmethod
-    def of_dict(data:dict[str, Any]) -> 'Req':
+    @classmethod
+    def of_dict(cls, data:dict[str, Any]) -> Self:
         return Req(
             version = data.get('version', 'v1'),
             metadata = Metadata.of_dict(data.get('metadata') or {}),
             data = data.get('data', {})
         )
 
-    @staticmethod
-    def build(data:Any, version:str = "v1", metadata:Metadata|None = None) -> 'Req':
+    @classmethod
+    def build(cls, data:Any, version:str = "v1", metadata:Metadata|None = None) -> Self:
         return Req(
             version = version,
             metadata = metadata,
@@ -45,8 +45,8 @@ class Res(object):
     metadata: Metadata|None = None
     datas: list[Any] = field(default_factory=list)
 
-    @staticmethod
-    def of_dict(data:dict[str, Any]) -> 'Res':
+    @classmethod
+    def of_dict(cls, data:dict[str, Any]) -> Self:
         return Res(
             version = data.get('version', 'v1'),
             statusdata = Statusdata.of_dict(data.get('statusdata') or {}),
@@ -54,8 +54,8 @@ class Res(object):
             datas = data.get('datas') or []
         )
 
-    @staticmethod
-    def success(*datas: Any) -> 'Res':
+    @classmethod
+    def success(cls, *datas: Any) -> Self:
         return Res (
             version = "v1",
             statusdata = Statusdata(
@@ -66,8 +66,8 @@ class Res(object):
             datas = list(datas)
         )
 
-    @staticmethod
-    def fail(err: IDyError,  *datas: Any) -> 'Res':
+    @classmethod
+    def fail(cls, err: IDyError,  *datas: Any) -> Self:
         return Res (
             version = "v1",
             statusdata = Statusdata(

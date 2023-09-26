@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from dataclasses import dataclass, asdict
-from typing import Any
+from typing import Any, Self
 from ....definations.err import ErrorDefs
 from ..err import DyError
 from ..data import DataPageRequest
@@ -13,8 +13,8 @@ class Pagination:
     limit: int
     total: int
 
-    @staticmethod
-    def of_dict(data:dict[str, Any]) -> 'Pagination':
+    @classmethod
+    def of_dict(cls, data:dict[str, Any]) -> Self:
         offset_data = data.get('offset')
         if not offset_data:
             raise DyError(ErrorDefs.ARG_VALIDATION_FAILED.value, title = "Make pagination failed", error_message = "Miss 'offset' parameter").as_exception()
@@ -29,15 +29,15 @@ class Pagination:
 
         return Pagination(offset = offset_data, limit = limit_data, total = total_data)
 
-    @staticmethod
-    def of_dict_or(data:dict[str, Any], other: 'Pagination' | None = None) -> 'Pagination' | None:
+    @classmethod
+    def of_dict_or(cls, data:dict[str, Any], other: Self | None = None) -> Self | None:
         try:
             return Pagination.of_dict(data)
         except:
             return other
         
-    @staticmethod
-    def make_of_page(page_number:int, page_size:int, total_size:int = -1) -> 'Pagination':
+    @classmethod
+    def make_of_page(cls, page_number:int, page_size:int, total_size:int = -1) -> Self:
         pn, ps = DataPageRequest.check_page_parameter_and_get(page_number, page_size)
         if -1 > total_size: total_size = -1
         

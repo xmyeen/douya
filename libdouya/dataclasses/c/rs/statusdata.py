@@ -12,8 +12,8 @@ class Statusdata(object):
     prompt_message: str|None = None
     message: str|None = None
 
-    @staticmethod
-    def of_dict(data:dict[str, Any]) -> 'Statusdata':
+    @classmethod
+    def of_dict(cls, data:dict[str, Any]) -> Self:
         id_data = data.get('id')
         if not id_data:
             raise DyError(ErrorDefs.ARG_VALIDATION_FAILED.value, title = "Make status failed", error_message = "Miss 'id' parameter").as_exception()
@@ -24,8 +24,8 @@ class Statusdata(object):
             message = data.get('message')
         )
 
-    @staticmethod
-    def of_dict_or(data:dict[str, Any], other: 'Statusdata' | None = None) -> 'Statusdata' | None:
+    @classmethod
+    def of_dict_or(cls, data:dict[str, Any], other: Self | None = None) -> Self | None:
         try:
             return Statusdata.of_dict(data)
         except:

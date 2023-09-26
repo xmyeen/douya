@@ -5,7 +5,7 @@
     network_utility.py - 网络相关的通用方法集
 '''
 
-class NetworkUtil(object):
+class NetworkUtl(object):
     # 子网掩码地址转长度
     @staticmethod
     def conv_netmask_to_bit_length(mask_net_str:str):
@@ -60,12 +60,12 @@ class NetworkUtil(object):
         
         for i in range(subnet_address_count):
             subnet_address_binary_number_str = '{0:032b}'.format(int(subnet_first_address_binary_number_str, 2) + i)
-            yield NetworkUtil.conv_binary_address_to_ip_address(subnet_address_binary_number_str)
+            yield NetworkUtl.conv_binary_address_to_ip_address(subnet_address_binary_number_str)
 
     @staticmethod
     def compare_ip_address(lv:str, rv:str) -> int:
-        lbv = NetworkUtil.conv_ip_address_to_binary_address(lv)
-        rbv = NetworkUtil.conv_ip_address_to_binary_address(rv)
+        lbv = NetworkUtl.conv_ip_address_to_binary_address(lv)
+        rbv = NetworkUtl.conv_ip_address_to_binary_address(rv)
         if lbv > rbv: return 1
         elif lbv < rbv: return -1
         else: return 0

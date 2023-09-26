@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from dataclasses import dataclass, asdict
-from typing import Any,Self
+from typing import Any, Self
 from ....definations.err import ErrorDefs
 # from ..c.err import DyError
 from .pagination import Pagination
@@ -15,8 +15,8 @@ class Metadata(object):
     forwared_for: str|None = None
     track_service_url: str|None = None
 
-    @staticmethod
-    def of_dict(data:dict[str, Any]) -> 'Metadata':
+    @classmethod
+    def of_dict(cls, data:dict[str, Any]) -> Self:
         return Metadata(
             seq = data.get('seq'),
             pagination = Pagination.of_dict_or(data.get('pagination') or {}),
