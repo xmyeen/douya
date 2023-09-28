@@ -98,7 +98,7 @@ class DataPageRequest(object):
     def page_size(self) -> int: return self.__page_size
 
     @property
-    def offset(self) -> int: return self.__page_number * self.__page_size
+    def offset(self) -> int: return (self.__page_number - 1) * self.__page_size
 
     def first(self) -> Self:
         pn = self.first_page_number()
