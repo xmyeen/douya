@@ -22,8 +22,8 @@ class BaseDatabaseProxy(IDatabaseProxy):
         self.__declarative = declarative
         self.__configuration = configuration.copy()
 
-        self.__initialization_flag_lock = threading.Lock()
-        self.__initialization_flag_set = set()
+        self.__connection_pool_lock = threading.Lock()
+        self.__connection_pool_set = set()
 
     @property
     def code_name(self) -> str:
@@ -57,7 +57,7 @@ class BaseDatabaseProxy(IDatabaseProxy):
         '''连接池类型
         '''
 
-    def __gen_current_initialization_flag(self) -> str:
+    def __gen_current_connection_pool_id(self) -> str:
         cpt = self.get_orm_connection_pool_type()
         if OrmConnectionPoolTypeDef.ONLY_ONE.value == cpt:
             return "1"
@@ -66,22 +66,22 @@ class BaseDatabaseProxy(IDatabaseProxy):
         else:
             return f"{os.getpid()}"
 
-    def __establish_connection_internally(self, enable_scheme_rebuiding:bool):
-        flag = self.__gen_current_initialization_flag()
-        if flag not in self.__initialization_flag_set:
-            with self.__initialization_flag_lock:
-                if flag not in self.__initialization_flag_set:
+    async def __establish_connection_internally(self, enable_scheme_rebuiding:bool):
+        pool_id = self.__gen_current_connection_pool_id()
+        if pool_id not in self.__connection_pool_set:
+            with self.__connection_pool_lock:
+                if pool_id not in self.__connection_pool_set:
                     try:
-                        self.connect(enable_scheme_rebuiding = enable_scheme_rebuiding)
-                        self.__initialization_flag_set.add(flag)
+                        await self.connect(enable_scheme_rebuiding = enable_scheme_rebuiding)
+                        self.__connection_pool_set.add(pool_id)
                     except:
                         logging.exception(f"Connect '{self.code_name}' database failed")
 
     def establish_connection(self):
-        self.__establish_connection_internally(False)
+        return self.__establish_connection_internally(False)
 
     def initialize(self):
         # 为了初始化数据库样式，创建时，需要立刻进行一次初始化。
         # enable_scheme_rebuiding = False if self.__initialization_flag_set else True
-        self.__establish_connection_internally(True)
+        return self.__establish_connection_internally(True)
 

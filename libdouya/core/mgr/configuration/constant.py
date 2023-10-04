@@ -52,7 +52,7 @@ CONFIGURATION_DFLT_DEF = f'''
 debug = false
 
 [{DY_CONFIGURATION_KEY_DEF.PRIMARY_DATABASE}]
-url = "sqlite://"
+url = "sqlite+aiosqlite://"
 is_debugging = false
 options = [ "creating_tables" ]
 db_dir = ""

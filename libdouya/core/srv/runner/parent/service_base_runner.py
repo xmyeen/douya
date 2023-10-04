@@ -34,10 +34,6 @@ class ServiceBaseRunner(metaclass = ABCMeta):
         self.__halt_flag.set()
 
     def walk_service(self, cron_sleeper: Sleeper):
-        if self.service.databases:
-            with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as cf:
-                cf.establish_connection(self.service.databases)
-
         # if t1 is not None and 0 == getattr(t1 - t0, 'seconds'):
         #     t0 = t0 + datetime.timedelta(seconds = 1)
         logging.info(f"The '{self.service.code}' service is initializing.")

@@ -2,10 +2,6 @@
 #!/usr/bin/env python
 
 import logging
-from typing import List,Dict,Any#,Union
-from attrbox import AttrDict
-
-# from libdouya.core.mgr.naming_mgr.naming_mgr import NamingMgr
 from ...definations.cfg import DY_CONFIGURATION_KEY_DEF, ConfigerDefs
 from ...dataclasses.i.rdb import IDatabaseDeclarative, IDatabases
 from ...dataclasses.c.cfg import DatabaseConfiger
@@ -17,11 +13,17 @@ class DefaultDatabaseConfiger(DatabaseConfiger):
     def __init__(self):
         DatabaseConfiger.__init__(self)
 
-    def establish_connection(self, databases: IDatabases):
+    async def do_initialization(self, databases: IDatabases):
         for code_name in databases.code_names:
-            databases.db(code_name).establish_connection()
+            database = databases.db(code_name)
+            await database.initialize()
 
-    def initialize_and_get_databases(self, *declaratives:IDatabaseDeclarative) -> IDatabases|None:
+    async def establish_connection(self, databases: IDatabases):
+        for code_name in databases.code_names:
+            database = databases.db(code_name)
+            await database.establish_connection()
+
+    def get_databases(self, *declaratives:IDatabaseDeclarative) -> IDatabases|None:
         dbs = []
         for declarative in declaratives:
             subcfg = self.configuration.get(declarative.code_name)
@@ -30,7 +32,6 @@ class DefaultDatabaseConfiger(DatabaseConfiger):
             db = declarative.make_proxy(**subcfg)
 
             try:
-                db.initialize()
                 dbs.append(db)
             except:
                 logging.exception(f"Initialize database failed: {db.code_name}")

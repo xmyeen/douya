@@ -10,11 +10,16 @@ class DatabaseConfiger(BaseConfiger):
         BaseConfiger.__init__(self)
 
     @abstractmethod
-    def initialize_and_get_databases(self, *declaratives:IDatabaseDeclarative) -> IDatabases:
+    def get_databases(self, *declaratives:IDatabaseDeclarative) -> IDatabases:
         '''初始化并返回一个databases对象
         '''
 
     @abstractmethod
-    def establish_connection(self, databases: IDatabases):
+    async def do_initialization(self, databases: IDatabases):
+        '''初始化数据库接口
+        '''
+
+    @abstractmethod
+    async def establish_connection(self, databases: IDatabases):
         '''确保databases对象的连接，当多进程时此方法可以确保子进程的数据库连接可用
         '''

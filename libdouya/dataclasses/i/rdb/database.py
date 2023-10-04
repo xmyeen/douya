@@ -2,8 +2,10 @@
 #!/usr/bin/env python
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from typing import Any, List, Dict
-from contextlib import contextmanager
+from typing import Any, AsyncIterable
+from contextlib import asynccontextmanager
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import AsyncAttrs, AsyncEngine, AsyncSession, async_scoped_session
 
 #*data_records:Any
 
@@ -22,6 +24,10 @@ from contextlib import contextmanager
 
 # def make_table_declarative_entity(id:str, ctx:Any) -> Any:
 #     pass
+
+class IDatabaseTable(AsyncAttrs, DeclarativeBase):
+    def to_dict(self) -> dict[str, Any]:
+        return { c.name : getattr(self, c.name, None) for c in self.__table__.columns } # type: ignore # ignore: type
 
 class IDatabaseProxy(metaclass = ABCMeta):
     def __init__(self): pass
@@ -57,7 +63,7 @@ class IDatabaseProxy(metaclass = ABCMeta):
 
     @property
     @abstractmethod
-    def internal_implementation(self) -> Any: 
+    def internal_implementation(self) -> AsyncEngine: 
         '''内部实现'''
 
     @property
@@ -66,28 +72,28 @@ class IDatabaseProxy(metaclass = ABCMeta):
         '''数据库代号'''
 
     @abstractmethod
-    def connect(self, enable_scheme_rebuiding:bool):
+    async def connect(self, enable_scheme_rebuiding:bool):
         '''连接数据库
         '''
 
     @abstractmethod
-    def establish_connection(self):
+    async def establish_connection(self):
         '''连接数据库
         '''
 
     @abstractmethod
-    def initialize(self):
+    async def initialize(self):
         '''初始化
         '''
 
-    @contextmanager
+    @asynccontextmanager
     @abstractmethod
-    def on_session(self) -> Any:
+    async def on_session(self) -> AsyncIterable[AsyncSession|async_scoped_session]:
         pass
 
-    @contextmanager
+    @asynccontextmanager
     @abstractmethod
-    def on_transactional_session(self) -> Any:
+    async def on_transactional_session(self) -> AsyncIterable[AsyncSession|async_scoped_session]:
         pass
 
 class IDatabaseDeclarative(metaclass = ABCMeta):
@@ -100,13 +106,8 @@ class IDatabaseDeclarative(metaclass = ABCMeta):
 
     @property
     @abstractmethod
-    def table(self) -> Any: 
+    def table(self) -> IDatabaseTable: 
         '''表的描述'''
-
-    @property
-    @abstractmethod
-    def internal_implementation(self) -> Any: 
-        '''内部实现'''
 
     @abstractmethod
     def make_proxy(self, **configuration:Any) -> IDatabaseProxy: pass

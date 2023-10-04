@@ -22,7 +22,7 @@ class DefaultServiceConfiger(ServiceConfiger):
     # def __exit__(self,exc_type, exc_val, exc_tb):
     #     pass
 
-    def group_services(self, dbs: Databases) -> Iterable[list[list[IDyService]]]:
+    def group_services(self) -> Iterable[list[list[IDyService]]]:
         srvs = []
         for service_code, service_configuration in self.configuration.items():
             try:
@@ -36,7 +36,6 @@ class DefaultServiceConfiger(ServiceConfiger):
                     raise RuntimeError(f"Invalid service type: {service_code}")
 
                 srv.code = service_code
-                srv.databases = dbs
                 srv.configuration = service_configuration.copy()
                 logging.debug(f"The final configuration of '{service_code}' service: {srv.configuration}")
 

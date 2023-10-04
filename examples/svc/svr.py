@@ -2,10 +2,11 @@
 #!/usr/bin/env python
 
 from typing import Any
-from pony.orm import PrimaryKey,Required
+from sqlalchemy import select
+from sqlalchemy.orm import mapped_column, Mapped
 from sanic import Blueprint, json, text, Sanic
 from sanic.blueprint_group import BlueprintGroup
-from libdouya.dataclasses.i.rdb import IDatabaseDeclarative
+from libdouya.dataclasses.i.rdb import IDatabaseDeclarative, IDatabaseProxy
 from libdouya.definations.db import OrmDef
 from libdouya.definations.cfg import ConfigerDefs
 from libdouya.dataclasses.c.db import Databases
@@ -15,29 +16,30 @@ from libdouya.core.deco import obj_d
 from libdouya.core.hook.db import make_db_declarative
 from libdouya.core.app import DyApplication
 from libdouya.core.hook.err import mkerr
-import libdouya.core.rdb.orm.pony_database
+import libdouya.core.rdb.orm.sqlalchemy_database
 from libdouya.implements.services.sanic_service import SanicAsyncService, BaseAsyncService
 import libdouya.implements.configers.default_service_configer
 import libdouya.implements.configers.default_database_configer
 
-db_declarative = make_db_declarative(OrmDef.PONY_ORM.value)
+primary_db_declarative = make_db_declarative(OrmDef.SQLALCHEMY_ORM.value)
 
-class User(db_declarative.table):
-    id = PrimaryKey(int, auto = True)
-    name = Required(str)
-    age = Required(int)
+class User(primary_db_declarative.table):
+    __tablename__ = 'sa_user_tbl'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str]
+    age:  Mapped[int]
 
 # logging.basicConfig(level = logging.DEBUG)
 
 bp = Blueprint("hi", url_prefix='/hi')
 
 @bp.get('/', version = 1)
-def hi(request,*args, **kwargs):
+async def hi(request,*args, **kwargs):
     sanic = Sanic.get_app('httpd')
     datas = []
 
-    with sanic.ctx.databases.db().on_session() as s:
-        datas.extend([ o.to_dict() for o in User.select() ])
+    async with sanic.ctx.databases.db().on_session() as session:
+        datas.extend([ o.to_dict() for o in await session.scalars(select(User)) ])
     # print('1'*30, request, sanic.ctx, args,  kwargs)
     return json(dict(datas = datas), ensure_ascii = False)
 
@@ -59,9 +61,10 @@ class MySanicAsyncService(SanicAsyncService):
     async def initialize(self):
         print('Make errr', mkerr(1, "My Error"))
 
-        if db := self.databases.db():
-            with db.on_transactional_session() as _:
-                User(name = '张三', age = 18)
+        # if declaratives := self.get_database_declaratives():
+        with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as database_configer:
+            self.databases = database_configer.get_databases(primary_db_declarative)
+            await database_configer.establish_connection(self.databases)
 
         # self.sanic.ctx.dbs = dbs
 
@@ -79,11 +82,18 @@ class MyDyApp(DyApplication):
     def __init__(self):
         DyApplication.__init__(self)
 
+    async def initialize(self):
+        with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as database_configer:
+            databases = database_configer.get_databases(primary_db_declarative)
+            await database_configer.do_initialization(databases)
+            async with databases.db().on_transactional_session() as session:
+                session.add(User(name = '张三', age = 18))
+
     def get_configurations(self) -> list[dict[str, Any]]:
         return [
             dict(
                 db = dict (
-                    priv = dict(url = "sqlite:///app.db")
+                    priv = dict(url = "sqlite+aiosqlite:///app.db")
                 ),
                 srv = dict(
                     cron = dict(disable = False, schedule = dict( cron = "* * * * * 0/10"), parallel_number = 3),
@@ -91,9 +101,6 @@ class MyDyApp(DyApplication):
                 )
             )
         ]
-
-    def get_database_declaratives(self) -> list[IDatabaseDeclarative]:
-        return [ db_declarative ]
 
 app = MyDyApp()
 app()

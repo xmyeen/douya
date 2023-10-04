@@ -1,21 +1,18 @@
 # -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
-import logging, os
+import logging, os, asyncio
 from urllib.parse import urlparse
-from typing import Any,Dict
-from contextlib import contextmanager
-
-try:
-    from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
-    from sqlalchemy.orm import Session,sessionmaker,scoped_session
-    from sqlalchemy.engine import Engine
-    from sqlalchemy import create_engine
-except:
-    pass
+from typing import Any, AsyncIterable
+from contextlib import asynccontextmanager
+# from sqlalchemy.orm import declarative_base, DeclarativeMeta
+# from sqlalchemy.orm import Session,sessionmaker,scoped_session
+# from sqlalchemy.engine import Engine
+# from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession, async_scoped_session, AsyncSessionTransaction, async_sessionmaker, async_scoped_session
 from ....definations.err import ErrorDefs
 from ....definations.db import DialectDef, OptDef, OrmDef, OrmConnectionPoolTypeDef
-from ....dataclasses.i.rdb import IDatabaseDeclarative, IDatabaseProxy
+from ....dataclasses.i.rdb import IDatabaseDeclarative, IDatabaseProxy, IDatabaseTable
 from ....dataclasses.c.err import DyError
 from ...deco import obj_d
 from .parent.base_database import BaseDatabaseDeclarative, BaseDatabaseProxy
@@ -26,21 +23,21 @@ class SQLAlchemyDatabase(BaseDatabaseProxy):
         self.__session_factory = None
         self.__engine = None
 
-    def __get_session_factory(self) -> scoped_session | sessionmaker: # pyright: reportUnboundVariable=false
+    def __make_session(self) -> AsyncSession|async_scoped_session:
         if not self.__session_factory:
-            self.__session_factory = sessionmaker(bind = self.__engine)
+            self.__session_factory = async_sessionmaker(bind = self.__engine)
             if self.configuration.get('multi_threading'):
-                self.__session_factory = scoped_session(self.__session_factory)
-        return self.__session_factory
+                self.__session_factory = async_scoped_session(self.__session_factory, scopefunc = asyncio.current_task)
+        return self.__session_factory()
 
     @property
-    def internal_implementation(self) -> Any:
+    def internal_implementation(self) -> AsyncEngine:
         return self.__engine
 
     def get_orm_connection_pool_type(self) -> str:
         return OrmConnectionPoolTypeDef.EVERY_PROCESSOR.value
 
-    def connect(self, enable_scheme_rebuiding:bool):
+    async def connect(self, enable_scheme_rebuiding:bool):
         connection_options = self.connection_options or []
 
         final_connection_url = self.connection_url
@@ -57,57 +54,55 @@ class SQLAlchemyDatabase(BaseDatabaseProxy):
                     final_connection_url = self.connection_url.replace(u.path, f'{db_dir_path}{u.path}')
 
         logging.debug(f"Make engine for database: {final_connection_url}")
-        self.__engine = create_engine(
+        self.__engine = create_async_engine(
             final_connection_url,
-            pool_size = int(self.configuration.get("pool_size", 10)), #默认是10个
-            pool_recycle = int(self.configuration.get("pool_timeout", -1)), # 默认不回收线程池
+            # pool_size = int(self.configuration.get("pool_size", 10)), #默认是10个
+            # pool_recycle = int(self.configuration.get("pool_timeout", -1)), # 默认不回收线程池
             echo = bool(self.configuration.get("echo", False)), # 打印数据库相关
             echo_pool = bool(self.configuration.get("echo", False)) # 打印数据库相关
         )
 
-        if enable_scheme_rebuiding:
-            if OptDef.DROPPING_TABLES.value in connection_options:
-                self.declarative.internal_implementation.metadata.drop_all(self.__engine)
-            if OptDef.CREATING_TABLES.value in connection_options:
-                self.declarative.internal_implementation.metadata.create_all(self.__engine, checkfirst = True)
+        async with self.__engine.begin() as conn:
+            if enable_scheme_rebuiding:
+                if OptDef.DROPPING_TABLES.value in connection_options:
+                    await conn.run_sync(self.declarative.table.metadata.drop_all)
+                if OptDef.CREATING_TABLES.value in connection_options:
+                    await conn.run_sync(self.declarative.table.metadata.create_all, checkfirst = True)
             # DbBase.metadata.drop_all(self.__engine)
             # DbBase.metadata.create_all(self.__engine, checkfirst = True)
 
-    @contextmanager
-    def on_session(self) -> Any:
-        session_factory = self.__get_session_factory()
-        yield session_factory()
+    @asynccontextmanager
+    async def on_session(self) -> AsyncIterable[AsyncSession|async_scoped_session]:
+        session = self.__make_session()
+        try:
+            yield session
+        finally:
+            await session.close()
 
-    @contextmanager
-    def on_transactional_session(self) -> Any:
-        with self.on_session() as s:
+    @asynccontextmanager
+    async def on_transactional_session(self) -> AsyncIterable[AsyncSession|async_scoped_session]:
+        session = self.__make_session()
+        async with session.begin() as transaction:
             try:
-                yield s
-                s.commit()
+                yield session
+                await transaction.commit()
             except BaseException as e:
                 # logging.exception("Got some exception")
-                s.rollback()
+                await transaction.rollback()
                 raise DyError(ErrorDefs.DB_OPERATE_FAILED.value, "Operate Database Failed", str(e)).as_exception()
-
-class SQLAlchemyTableBase(object):
-    def __init__(self): pass
-
-    def to_dict(self) -> dict[str, Any]:
-        return { c.name : getattr(self, c.name, None) for c in self.__table__.columns } # type: ignore # ignore: type
+            finally:
+                await session.close()
 
 @obj_d(OrmDef.SQLALCHEMY_ORM.value)
 class SQLAlchemyDatabaseDeclarative(BaseDatabaseDeclarative):
-    def __init__(self, code_name:str):
+    def __init__(self, code_name:str, base_class: type[IDatabaseTable]):
         BaseDatabaseDeclarative.__init__(self, code_name)
-        self.__base : DeclarativeMeta  = declarative_base(cls = SQLAlchemyTableBase)
+        # self.__base : DeclarativeMeta  = declarative_base(AsyncAttrs, cls = SQLAlchemyTableBase)
+        self.__base_class = base_class
 
     @property
-    def table(self) -> Any:
-        return self.__base
-
-    @property
-    def internal_implementation(self) -> Any:
-        return self.__base
+    def table(self) -> IDatabaseTable:
+        return self.__base_class
 
     def make_proxy(self, **configuration:Any) -> IDatabaseProxy:
         return SQLAlchemyDatabase(self.code_name, self, **configuration)

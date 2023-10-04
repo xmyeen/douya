@@ -33,7 +33,7 @@ class ErrorDatacacheObjectBuilder(IDatacacheObjectBuilder):
             self.__error_entry.get("prompt_message"), 
             **self.__keyword_argument
         )
-        if  self.__other_error_messages:
+        if self.__other_error_messages:
             dy_error.append(* self.__other_error_messages)
 
         return dy_error

@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 import os, sys, logging, logging.config, getopt, time, select, errno, asyncio
-from typing import Any
+from typing import Any, Awaitable
 from ...definations.cfg import DY_CONFIGURATION_KEY_DEF, EnvDefs, ConfigerDefs
 from ...dataclasses.i.rdb import IDatabaseDeclarative
 # from ...dataclasses.i.srv import IDyService
@@ -71,16 +71,12 @@ class DyApplication(object):
             datacaches = datacache_configer.make_data_caches()
             DatacacheMgr.get_instance().add(*datacaches)
 
-        dbs: Databases | None = None
-        if declaratives := self.get_database_declaratives():
-            with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as database_configer:
-                dbs = database_configer.initialize_and_get_databases(*declaratives)
-
         tasks = []
         with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.SRV.value) as service_configer:
-            for srv_groups in service_configer.group_services(dbs):
+            for srv_groups in service_configer.group_services():
                 for srvs in srv_groups:
                     tasks.append(ServiceTask(*srvs))
+
         if not tasks:
             raise RuntimeError("No service task found")
         tasks.append(self.__wait_sleep())
@@ -101,8 +97,8 @@ class DyApplication(object):
         loop = asyncio.get_event_loop()
 
         try:
-            # loop.run_until_complete(asyncio.wait(tasks))
-            loop.run_until_complete(asyncio.wait([ asyncio.ensure_future(task) for task in tasks]))
+            loop.run_until_complete(self.initialize())
+            loop.run_until_complete(asyncio.wait([asyncio.ensure_future(task) for task in tasks]))
         except (KeyboardInterrupt, SystemExit):
             logging.info('SIGINT or CTRL-C detected. Exiting gracefully')
         finally:
@@ -201,8 +197,6 @@ class DyApplication(object):
     def get_configurations(self) -> list[dict[str,Any]]: return self.__configurations
     # configurations = property(get_configurations, None, None, "配置")
 
-    def get_database_declaratives(self) -> list[IDatabaseDeclarative]: return []
-
     def parse_cmdline(self):
         opts, *_ = getopt.getopt(sys.argv[1:], "hc:", ["help", "env=", "configuration-file=", "env-configuration-file="])
         for name, value in opts:
@@ -216,3 +210,5 @@ class DyApplication(object):
             elif name in ["-c", "--env-configuration-file"]:
                 with open(value, 'r', encoding='utf-8') as f:
                     self.get_env_configurations().append(f.read())
+
+    async def initialize(self): pass

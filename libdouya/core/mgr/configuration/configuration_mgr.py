@@ -4,7 +4,8 @@
 import os,logging,json,pathlib
 from functools import reduce
 from typing import Iterator, Any
-from attrbox import AttrDict, AttrList, dict_set, dict_get, dict_merge
+from attrbox import AttrDict, AttrList#, dict_set, dict_get, dict_merge
+from attrbox.fn import get_path as dict_get_path, set_path as dict_set_path, dict_merge
 from ....definations import DyUrlDefs
 from ....definations.cfg import EnvDefs,EnvFilterModeDef,EnvSelectModeDef, DY_CONFIGURATION_KEY_DEF
 from ....dataclasses.i.cfg import IBaseConfiger
@@ -44,7 +45,7 @@ class EnvironmentConfiguration(object):
             for p in paths:
                 try:
                     if v := self.get_env(name):
-                        dict_set(configuration, p, v)
+                        dict_set_path(configuration, p.split('.'), v)
                 except BaseException:
                     logging.exception("Invalid exception")
 
@@ -195,12 +196,12 @@ class ConfigurationMgr(metaclass = Singleton):
 
         if not key: return default_value
 
-        v = dict_get(self.configuration, key)
+        v = dict_get_path(self.configuration, key.split('.'))
         if v is None: return default_value
 
         return v
 
-    def get_configer(self, name:str, *args:Any, **kwargs:Any) -> Any:
+    def get_configer(self, name:str, *args:Any, **kwargs:Any) -> type[IBaseConfiger]:
         urls = NamingMgr.get_instance().get_alias_urls(name)
         if not urls: raise RuntimeError(f"Can't find configer: {name}")
         logging.info(f"Find configuration url: {urls}")
