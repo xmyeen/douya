@@ -82,13 +82,6 @@ class MyDyApp(DyApplication):
     def __init__(self):
         DyApplication.__init__(self)
 
-    async def initialize(self):
-        with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as database_configer:
-            databases = database_configer.get_databases(primary_db_declarative)
-            await database_configer.do_initialization(databases)
-            async with databases.db().on_transactional_session() as session:
-                session.add(User(name = '张三', age = 18))
-
     def get_configurations(self) -> list[dict[str, Any]]:
         return [
             dict(
@@ -102,5 +95,12 @@ class MyDyApp(DyApplication):
             )
         ]
 
+async def initialize():
+    with ConfigurationMgr.get_instance().get_configer(ConfigerDefs.DB.value) as database_configer:
+        databases = database_configer.get_databases(primary_db_declarative)
+        await database_configer.do_initialization(databases)
+        async with databases.db().on_transactional_session() as session:
+            session.add(User(name = '张三', age = 18))
+
 app = MyDyApp()
-app()
+app(before_service = initialize)

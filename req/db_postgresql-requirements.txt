@@ -2,4 +2,5 @@
 #postgresql+psycopg2cffi://scott:tiger@127.0.0.1:5432/test
 # sqlalchemy[postgresql_psycopg2cffi] ; sys_platform == 'linux'
 # sqlalchemy[postgresql] ; sys_platform == 'win32'
+asyncpg
 sqlalchemy[asyncio]

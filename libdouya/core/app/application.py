@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 import os, sys, logging, logging.config, getopt, time, select, errno, asyncio
-from typing import Any, Awaitable
+from typing import Any, Awaitable, Callable
 from ...definations.cfg import DY_CONFIGURATION_KEY_DEF, EnvDefs, ConfigerDefs
 from ...dataclasses.i.rdb import IDatabaseDeclarative
 # from ...dataclasses.i.srv import IDyService
@@ -39,7 +39,7 @@ class DyApplication(object):
         self.__configurations = []
         # self.__halt_event = threading.Event()
 
-    def __call__(self):
+    def __call__(self, **callable_info: Callable[[], Any]):
         self.parse_cmdline()
 
         self.__import_module_set.update([ m for m in os.environ.get(EnvDefs.APP_MODULE.name, "").split(":") if m ])
@@ -97,7 +97,9 @@ class DyApplication(object):
         loop = asyncio.get_event_loop()
 
         try:
-            loop.run_until_complete(self.initialize())
+            if before_service_fn := callable_info.get('before_service'):
+                if isinstance(what := before_service_fn(), Awaitable):
+                    loop.run_until_complete(what)
             loop.run_until_complete(asyncio.wait([asyncio.ensure_future(task) for task in tasks]))
         except (KeyboardInterrupt, SystemExit):
             logging.info('SIGINT or CTRL-C detected. Exiting gracefully')
